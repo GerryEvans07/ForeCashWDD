@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-[#FFFBF0]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForeCash — Calm Financial Early Warning</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Fail CSS Luaran -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="min-h-full flex flex-col justify-between">
+
+    <!-- ================= 1. FULL-SCREEN LOGIN / LANDING SCREEN ================= -->
+    <div id="loginPage" class="fixed inset-0 z-50 bg-[#FFFBF0] overflow-y-auto flex items-center justify-center p-4">
+        <div class="max-w-md w-full my-auto space-y-6 text-center">
+            
+            <div class="relative w-36 h-36 mx-auto character-bounce">
+                <div class="absolute inset-0 bg-hsYellow/30 rounded-full animate-ping opacity-25"></div>
+                <div class="w-36 h-36 bg-hsOrange rounded-full shadow-lg flex flex-col items-center justify-center relative border-4 border-white overflow-hidden">
+                    <div class="flex gap-4 mb-2">
+                        <div class="w-4 h-5 bg-hsDark rounded-full hs-eye"></div>
+                        <div class="w-4 h-5 bg-hsDark rounded-full hs-eye"></div>
+                    </div>
+                    <div class="w-8 h-4 border-b-4 border-hsDark rounded-full"></div>
+                </div>
+                <div class="absolute -top-1 -right-1 text-2xl text-hsYellow animate-bounce">✨</div>
+            </div>
+
+            <div class="space-y-2">
+                <h1 class="text-3xl sm:text-4xl font-black text-hsDark tracking-tight">ForeCash</h1>
+                <p class="text-sm font-medium text-slate-600 px-4">
+                    Atur keuangan mahasiswa lebih tenang dengan <span class="text-hsOrange font-extrabold">Early-Warning AI</span> & <span class="text-hsBlue font-extrabold">Multi-Wallet</span>.
+                </p>
+            </div>
+
+            <div class="hs-card p-6 sm:p-8 space-y-5 text-left">
+                <div class="flex bg-slate-100 p-1.5 rounded-2xl">
+                    <button id="btnTabSignIn" onclick="switchLoginTab('signin')" class="w-1/2 py-2 text-xs sm:text-sm font-bold rounded-xl bg-hsYellow text-hsDark shadow-sm transition-all">
+                        Masuk Akun
+                    </button>
+                    <button id="btnTabSignUp" onclick="switchLoginTab('signup')" class="w-1/2 py-2 text-xs sm:text-sm font-bold rounded-xl text-slate-500 hover:text-hsDark transition-all">
+                        Daftar Baru
+                    </button>
+                </div>
+
+                <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                    <div id="signUpNameBox" class="hidden space-y-1">
+                        <label class="text-xs font-bold text-hsDark uppercase tracking-wider">Nama Lengkap</label>
+                        <input type="text" id="authNameInput" placeholder="Budi Mahasiswa" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-hsBlue text-sm font-semibold">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-hsDark uppercase tracking-wider">Email Kampus / Pribadi</label>
+                        <input type="email" id="authEmailInput" required placeholder="mahasiswa@ui.ac.id" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-hsBlue text-sm font-semibold">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-hsDark uppercase tracking-wider">Kata Sandi</label>
+                        <input type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-hsBlue text-sm font-semibold">
+                    </div>
+
+                    <button type="submit" id="authSubmitButton" class="hs-btn bg-hsOrange text-white w-full py-3.5 text-base text-center block mt-2">
+                        Masuk Ke App 🚀
+                    </button>
+                </form>
+
+                <div class="relative flex py-1 items-center">
+                    <div class="flex-grow border-t border-slate-200"></div>
+                    <span class="flex-shrink mx-3 text-xs font-bold text-slate-400">ATAU</span>
+                    <div class="flex-grow border-t border-slate-200"></div>
+                </div>
+
+                <button onclick="handleQuickDemoLogin()" class="hs-btn bg-hsYellow text-hsDark w-full py-3 text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-sparkles"></i> Masuk Cepat Mode Demo (Guest)
+                </button>
+            </div>
+
+            <p class="text-xs font-semibold text-slate-400">
+                Aplikasi keuangan edukatif khusus mahasiswa • 100% Bebas Stress
+            </p>
+        </div>
+    </div>
+
+    <!-- ================= 2. MAIN APPLICATION DASHBOARD ================= -->
+    <div id="mainDashboard" class="min-h-screen flex flex-col justify-between hidden">
+
+        <header class="sticky top-0 z-40 bg-[#FFFBF0]/90 backdrop-blur-md px-4 sm:px-8 py-4 border-b border-hsYellow/30">
+            <div class="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-hsOrange rounded-2xl flex items-center justify-center text-white text-xl shadow-md character-bounce">
+                        🟠
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-black text-hsDark tracking-tight leading-none">ForeCash</h1>
+                        <p class="text-[11px] font-bold text-hsOrange">Peaceful Financial AI</p>
+                    </div>
+                </div>
+
+                <nav class="flex items-center gap-1.5 overflow-x-auto py-1">
+                    <button onclick="switchTab('home')" id="tab-home" class="nav-tab active px-4 py-2 text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-house"></i> Beranda
+                    </button>
+                    <button onclick="switchTab('transaksi')" id="tab-transaksi" class="nav-tab px-4 py-2 text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-receipt"></i> Transaksi & OCR
+                    </button>
+                    <button onclick="switchTab('proyeksi')" id="tab-proyeksi" class="nav-tab px-4 py-2 text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-chart-line"></i> Proyeksi & Budget
+                    </button>
+                    <button onclick="switchTab('utang')" id="tab-utang" class="nav-tab px-4 py-2 text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-users"></i> Utang-Piutang
+                    </button>
+                    <button onclick="switchTab('laporan')" id="tab-laporan" class="nav-tab px-4 py-2 text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-pie-chart"></i> Laporan
+                    </button>
+                </nav>
+
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-100">
+                        <div id="userAvatar" class="w-6 h-6 rounded-full bg-hsPurple text-white font-black text-xs flex items-center justify-center">
+                            M
+                        </div>
+                        <span id="userNameDisplay" class="text-xs font-bold text-hsDark">Mahasiswa</span>
+                    </div>
+                    <button onclick="handleLogout()" class="hs-btn bg-slate-200 text-slate-700 px-3 py-1.5 text-xs" title="Keluar">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-5xl mx-auto w-full px-4 sm:px-8 py-6 flex-grow space-y-6">
+
+            <!-- PAGE 1: BERANDA -->
+            <div id="page-home" class="page-content space-y-6">
+                
+                <div class="bg-hsYellow p-6 sm:p-8 rounded-[2.5rem] shadow-sm relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="space-y-3 max-w-xl text-center md:text-left z-10">
+                        <div class="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-extrabold text-hsDark">
+                            <i class="fa-solid fa-bell text-hsOrange"></i> Financial Early-Warning System
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-hsDark leading-snug">
+                            "Tenang Budi, di pace jajan saat ini, uangmu bakal habis tanggal <span class="bg-hsOrange text-white px-3 py-0.5 rounded-2xl inline-block">24 Oktober</span>!"
+                        </h2>
+                        <p class="text-xs sm:text-sm font-medium text-hsDark/80 leading-relaxed">
+                            Kiriman orang tua baru masuk tanggal <strong class="text-hsDark">30 Oktober</strong>. Kurangi pengeluaran harian jadi <strong class="text-hsDark">Rp 28.000/hari</strong> supaya dompetmu aman tanpa pusing!
+                        </p>
+
+                        <div class="pt-2 space-y-1">
+                            <div class="flex justify-between text-xs font-bold text-hsDark">
+                                <span>Daya Tahan Saldo (Runway):</span>
+                                <span class="bg-white px-2.5 py-0.5 rounded-full">14 Hari Lagi</span>
+                            </div>
+                            <div class="w-full bg-white/50 rounded-full h-4 overflow-hidden p-0.5">
+                                <div class="bg-hsOrange h-full rounded-full transition-all duration-500" style="width: 48%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative w-36 h-36 shrink-0 character-bounce">
+                        <div class="w-36 h-36 bg-hsOrange rounded-full shadow-lg flex flex-col items-center justify-center relative border-4 border-white">
+                            <div class="flex gap-4 mb-2">
+                                <div class="w-4 h-5 bg-hsDark rounded-full hs-eye"></div>
+                                <div class="w-4 h-5 bg-hsDark rounded-full hs-eye"></div>
+                            </div>
+                            <div class="w-8 h-2 bg-hsDark rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-xl font-black text-hsDark">💳 Multi-Wallet System</h3>
+                            <p class="text-xs text-slate-500 font-medium">Pisahkan dompet bank, tunai, e-wallet, dan simpanan.</p>
+                        </div>
+                        <button onclick="openAddTransactionModal()" class="hs-btn bg-hsBlue text-white px-4 py-2 text-xs flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Tambah Transaksi
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="hs-card wallet-card p-5 bg-blue-50/50 space-y-2">
+                            <div class="flex justify-between items-center text-xs font-extrabold text-hsBlue">
+                                <span><i class="fa-solid fa-building-columns"></i> Bank Ortu</span>
+                                <span class="bg-blue-100 px-2 py-0.5 rounded-full">BCA</span>
+                            </div>
+                            <p class="text-2xl font-black text-hsDark">Rp 350.000</p>
+                            <p class="text-[11px] font-semibold text-slate-400">Transfer Bulanan</p>
+                        </div>
+
+                        <div class="hs-card wallet-card p-5 bg-orange-50/50 space-y-2">
+                            <div class="flex justify-between items-center text-xs font-extrabold text-hsOrange">
+                                <span><i class="fa-solid fa-wallet"></i> Tunai Dompet</span>
+                                <span class="bg-orange-100 px-2 py-0.5 rounded-full">Fisik</span>
+                            </div>
+                            <p class="text-2xl font-black text-hsDark">Rp 85.000</p>
+                            <p class="text-[11px] font-semibold text-slate-400">Pegangan Saku</p>
+                        </div>
+
+                        <div class="hs-card wallet-card p-5 bg-purple-50/50 space-y-2">
+                            <div class="flex justify-between items-center text-xs font-extrabold text-hsPurple">
+                                <span><i class="fa-solid fa-mobile-screen"></i> E-Wallet</span>
+                                <span class="bg-purple-100 px-2 py-0.5 rounded-full">Gopay</span>
+                            </div>
+                            <p class="text-2xl font-black text-hsDark">Rp 125.000</p>
+                            <p class="text-[11px] font-semibold text-slate-400">Digital Payment</p>
+                        </div>
+
+                        <div class="hs-card wallet-card p-5 bg-emerald-50/50 space-y-2">
+                            <div class="flex justify-between items-center text-xs font-extrabold text-hsGreen">
+                                <span><i class="fa-solid fa-piggy-bank"></i> Dana Darurat</span>
+                                <span class="bg-emerald-100 px-2 py-0.5 rounded-full">Target: 500k</span>
+                            </div>
+                            <p class="text-2xl font-black text-hsDark">Rp 180.000</p>
+                            <p class="text-[11px] font-semibold text-slate-400">Buffer Safe (36%)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <h3 class="text-xl font-black text-hsDark">🧾 Histori Pengeluaran</h3>
+                            <p class="text-xs text-slate-500 font-medium">Semua pengeluaran tercatat di sini supaya kondisi keuangan tetap transparan.</p>
+                        </div>
+                        <button onclick="switchTab('transaksi')" class="hs-btn bg-white text-hsDark px-4 py-2 text-xs border border-slate-100">
+                            Lihat Semua
+                        </button>
+                    </div>
+                    <div id="homeExpenseHistory" class="hs-card p-5 space-y-3"></div>
+                </div>
+
+                <div class="bg-hsSky/20 p-5 rounded-3xl border border-hsSky/40 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-hsBlue text-white rounded-2xl flex items-center justify-center text-xl shrink-0">
+                            📍
+                        </div>
+                        <div>
+                            <h4 class="font-black text-sm text-hsDark">Smart Location Alert Kontekstual</h4>
+                            <p class="text-xs font-medium text-slate-600">
+                                Kamu sedang dekat <strong class="text-hsOrange">Warung Kopi Kampus</strong>. Sisa budget jajan bulan ini tinggal <strong class="text-hsBlue">Rp 25.000</strong>.
+                            </p>
+                        </div>
+                    </div>
+                    <button id="reminderButton" onclick="setSmartReminder()" class="hs-btn bg-white text-hsDark px-3 py-2 text-xs shrink-0">
+                        Ingatkan Nanti
+                    </button>
+                </div>
+
+            </div>
+        </main>
+
+        <footer class="bg-white/60 py-4 px-4 text-center text-xs font-bold text-slate-400 border-t border-hsYellow/20">
+            ForeCash © 2026 — Calm & Transparent Student Financial Planning
+        </footer>
+
+    </div>
+
+    <!-- ================= MODALS ================= -->
+    <div id="transactionModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
+        <div class="hs-card w-full max-w-lg p-6 sm:p-7" role="dialog" aria-modal="true">
+            <div class="flex justify-between items-start mb-5">
+                <div><span class="text-xs font-bold text-hsBlue">MULTI-WALLET</span><h3 class="text-2xl font-black">Tambah Transaksi</h3></div>
+                <button onclick="closeTransactionModal()" class="w-9 h-9 rounded-full bg-slate-100 font-bold">×</button>
+            </div>
+            <form onsubmit="saveTransaction(event)" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="text-xs font-bold">Jenis</label><select id="txType" class="w-full mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200" required><option value="expense">Pengeluaran</option><option value="income">Pemasukan</option></select></div>
+                    <div><label class="text-xs font-bold">Nominal</label><input id="txAmount" type="number" min="1000" step="500" placeholder="25000" required class="w-full mt-1 px-4 py-3"></div>
+                </div>
+                <div><label class="text-xs font-bold">Nama transaksi</label><input id="txName" type="text" placeholder="Kopi susu" required class="w-full mt-1 px-4 py-3"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="text-xs font-bold">Kategori</label><select id="txCategory" class="w-full mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200"><option>Makan & Minum</option><option>Jajan & Kopi</option><option>Akademik</option><option>Hiburan</option><option>Transportasi</option><option>Lainnya</option></select></div>
+                    <div><label class="text-xs font-bold">Dompet</label><select id="txWallet" class="w-full mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200"><option>Bank Ortu</option><option>Tunai Dompet</option><option>E-Wallet</option><option>Dana Darurat</option></select></div>
+                </div>
+                <button class="hs-btn bg-hsBlue text-white w-full py-3.5">Simpan Transaksi</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="debtModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
+        <div class="hs-card w-full max-w-lg p-6 sm:p-7">
+            <div class="flex justify-between items-start mb-5"><div><span class="text-xs font-bold text-hsGreen">SOCIAL MONEY</span><h3 class="text-2xl font-black">Catat Bon Baru</h3></div><button onclick="closeDebtModal()" class="w-9 h-9 rounded-full bg-slate-100 font-bold">×</button></div>
+            <form onsubmit="saveDebt(event)" class="space-y-4">
+                <div><label class="text-xs font-bold">Nama</label><input id="debtName" required placeholder="Andi" class="w-full mt-1 px-4 py-3"></div>
+                <div><label class="text-xs font-bold">Keperluan</label><input id="debtReason" required placeholder="Split bill makan" class="w-full mt-1 px-4 py-3"></div>
+                <div><label class="text-xs font-bold">Nominal</label><input id="debtAmount" type="number" min="1000" required placeholder="25000" class="w-full mt-1 px-4 py-3"></div>
+                <div><label class="text-xs font-bold">Posisi</label><select id="debtDirection" class="w-full mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200"><option value="owedToMe">Dia utang ke saya</option><option value="iOwe">Saya utang ke dia</option></select></div>
+                <button class="hs-btn bg-hsGreen text-white w-full py-3.5">Simpan Bon</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-5 right-5 z-[100] hidden max-w-sm bg-hsDark text-white px-5 py-3 rounded-full shadow-xl text-sm font-bold"></div>
+
+    <!-- Fail JS Luaran -->
+    <script src="app.js"></script>
+</body>
+</html>
