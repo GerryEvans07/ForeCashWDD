@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-[#FFFBF0]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForeCash — Calm Financial Early Warning</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Fail CSS Terpisah -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="min-h-full flex flex-col justify-between">
+
+    <!-- ================= 1. MODUL AKUN: LOGIN & REGISTRASI ================= -->
+    <div id="loginPage" class="fixed inset-0 z-50 bg-[#FFFBF0] overflow-y-auto flex items-center justify-center p-4">
+        <div class="max-w-md w-full my-auto space-y-6 text-center">
+            
+            <div class="relative w-36 h-36 mx-auto character-bounce">
+                <div class="absolute inset-0 bg-hsYellow/30 rounded-full animate-ping opacity-25"></div>
+                <div class="w-36 h-36 bg-hsOrange rounded-full shadow-lg flex flex-col items-center justify-center relative border-4 border-white overflow-hidden">
+                    <div class="flex gap-4 mb-2">
+                        <div class="w-4 h-5 bg-hsDark rounded-full hs-eye"></div>
+                        <div class="w-4 h-5 bg-hsDark rounded-full hs-eye"></div>
+                    </div>
+                    <div class="w-8 h-4 border-b-4 border-hsDark rounded-full"></div>
+                </div>
+                <div class="absolute -top-1 -right-1 text-2xl text-hsYellow animate-bounce">✨</div>
+            </div>
+
+            <div class="space-y-2">
+                <h1 class="text-3xl sm:text-4xl font-black text-hsDark tracking-tight">ForeCash</h1>
+                <p class="text-sm font-medium text-slate-600 px-4">
+                    Atur keuangan mahasiswa lebih tenang dengan <span class="text-hsOrange font-extrabold">Early-Warning AI</span> & <span class="text-hsBlue font-extrabold">Multi-Wallet</span>.
+                </p>
+            </div>
+
+            <div class="hs-card p-6 sm:p-8 space-y-5 text-left">
+                <div class="flex bg-slate-100 p-1.5 rounded-2xl">
+                    <button id="btnTabSignIn" onclick="switchLoginTab('signin')" class="w-1/2 py-2 text-xs sm:text-sm font-bold rounded-xl bg-hsYellow text-hsDark shadow-sm transition-all">
+                        Login
+                    </button>
+                    <button id="btnTabSignUp" onclick="switchLoginTab('signup')" class="w-1/2 py-2 text-xs sm:text-sm font-bold rounded-xl text-slate-500 hover:text-hsDark transition-all">
+                        Registrasi
+                    </button>
+                </div>
+
+                <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                    <div id="signUpNameBox" class="hidden space-y-1">
+                        <label class="text-xs font-bold text-hsDark uppercase tracking-wider">Nama Lengkap</label>
+                        <input type="text" id="authNameInput" placeholder="Budi Mahasiswa" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-hsDark uppercase tracking-wider">Email Kampus / Pribadi</label>
+                        <input type="email" id="authEmailInput" required placeholder="mahasiswa@ui.ac.id" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-hsDark uppercase tracking-wider">Kata Sandi</label>
+                        <input type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold">
+                    </div>
+
+                    <button type="submit" id="authSubmitButton" class="hs-btn bg-hsOrange text-white w-full py-3.5 text-base text-center block mt-2">
+                        Masuk Ke App 🚀
+                    </button>
+                </form>
+
+                <div class="relative flex py-1 items-center">
+                    <div class="flex-grow border-t border-slate-200"></div>
+                    <span class="flex-shrink mx-3 text-xs font-bold text-slate-400">ATAU</span>
+                    <div class="flex-grow border-t border-slate-200"></div>
+                </div>
+
+                <button onclick="handleQuickDemoLogin()" class="hs-btn bg-hsYellow text-hsDark w-full py-3 text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-sparkles"></i> Masuk Cepat Mode Demo (Guest)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 2. MAIN APPLICATION DASHBOARD ================= -->
+    <div id="mainDashboard" class="min-h-screen flex flex-col justify-between hidden">
+
+        <!-- Top Navigation Bar -->
+        <header class="sticky top-0 z-40 bg-[#FFFBF0]/90 backdrop-blur-md px-4 sm:px-8 py-4 border-b border-hsYellow/30">
+            <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-hsOrange rounded-2xl flex items-center justify-center text-white text-xl shadow-md character-bounce">
+                        🟠
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-black text-hsDark tracking-tight leading-none">ForeCash</h1>
+                        <p class="text-[11px] font-bold text-hsOrange">Peaceful Financial AI</p>
+                    </div>
+                </div>
+
+        <!-- Nav Tab sesuai Site Diagram (Tombol Akun dipindah/digabung ke Profil) -->
+        <nav class="flex items-center gap-1.5 overflow-x-auto py-1">
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-tab active px-3.5 py-2 text-xs sm:text-sm flex items-center gap-1.5 whitespace-nowrap">
+                <i class="fa-solid fa-gauge-high"></i> Dashboard
+            </button>
+            <button onclick="switchTab('transaksi')" id="tab-transaksi" class="nav-tab px-3.5 py-2 text-xs sm:text-sm flex items-center gap-1.5 whitespace-nowrap">
+                <i class="fa-solid fa-receipt"></i> Transaksi
+            </button>
+            <button onclick="switchTab('utang')" id="tab-utang" class="nav-tab px-3.5 py-2 text-xs sm:text-sm flex items-center gap-1.5 whitespace-nowrap">
+                <i class="fa-solid fa-users"></i> Utang & Patungan
+            </button>
+            <button onclick="switchTab('prediksi')" id="tab-prediksi" class="nav-tab px-3.5 py-2 text-xs sm:text-sm flex items-center gap-1.5 whitespace-nowrap">
+                <i class="fa-solid fa-chart-line"></i> Prediksi & Notifikasi
+            </button>
+            <button onclick="switchTab('laporan')" id="tab-laporan" class="nav-tab px-3.5 py-2 text-xs sm:text-sm flex items-center gap-1.5 whitespace-nowrap">
+                <i class="fa-solid fa-pie-chart"></i> Laporan
+            </button>
+        </nav>
+
+            <!-- User Profile Bar (Sekaligus Tombol Navigasi Akun) -->
+            <div class="flex items-center gap-2">
+                <button onclick="switchTab('akun')" id="tab-akun" class="nav-tab flex items-center gap-2 bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-100 hover:border-hsOrange transition-all">
+                    <div id="userAvatar" class="w-6 h-6 rounded-full bg-hsPurple text-white font-black text-xs flex items-center justify-center">
+                        G
+                    </div>
+                        <span id="userNameDisplay" class="text-xs font-bold text-hsDark">gerryganteng7</span>
+                    </button>
+                    <button onclick="handleLogout()" class="hs-btn bg-slate-200 text-slate-700 px-3 py-1.5 text-xs" title="Keluar">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Body Content -->
+        <main class="max-w-6xl mx-auto w-full px-4 sm:px-8 py-6 flex-grow space-y-6">
+
+            <!-- ================= PAGE 1: DASHBOARD ================= -->
+            <div id="page-dashboard" class="page-content space-y-6">
+                <!-- Peringatan Dini -->
+                <div class="bg-hsYellow p-6 sm:p-8 rounded-[2.5rem] shadow-sm relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="space-y-3 max-w-xl text-center md:text-left z-10">
+                        <div class="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-extrabold text-hsDark">
+                            <i class="fa-solid fa-bell text-hsOrange"></i> Peringatan Dini Keuangan
+                        </div>
+                        <h2 id="earlyWarningBannerText" class="text-2xl sm:text-3xl font-black text-hsDark leading-snug">
+                            "Tenang Budi, uangmu diproyeksikan habis tanggal <span class="bg-hsOrange text-white px-3 py-0.5 rounded-2xl inline-block">24 Oktober</span>!"
+                        </h2>
+                        <p class="text-xs sm:text-sm font-medium text-hsDark/80 leading-relaxed">
+                            Kiriman orang tua baru masuk tanggal <strong class="text-hsDark">30 Oktober</strong>. Kurangi pengeluaran harian jadi <strong class="text-hsDark">Rp 28.000/hari</strong> supaya dompetmu aman tanpa pusing!
+                        </p>
+
+                        <div class="pt-2 space-y-1">
+                            <div class="flex justify-between text-xs font-bold text-hsDark">
+                                <span>Daya Tahan Saldo (Runway):</span>
+                                <span id="runwayDaysBadge" class="bg-white px-2.5 py-0.5 rounded-full">14 Hari Lagi</span>
+                            </div>
+                            <div class="w-full bg-white/50 rounded-full h-4 overflow-hidden p-0.5">
+                                <div id="runwayProgressBar" class="bg-hsOrange h-full rounded-full transition-all duration-500" style="width: 48%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative w-36 h-36 shrink-0 character-bounce">
+                        <div class="w-36 h-36 bg-hsOrange rounded-full shadow-lg flex flex-col items-center justify-center relative border-4 border-white">
+                            <div class="flex gap-4 mb-2">
+                                <div class="w-4 h-5 bg-hsDark rounded-full hs-eye"></div>
+                                <div class="w-4 h-5 bg-hsDark rounded-full hs-eye"></div>
+                            </div>
+                            <div class="w-8 h-2 bg-hsDark rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ringkasan Saldo -->
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-xl font-black text-hsDark">Ringkasan Saldo Wallet</h3>
+                            <p class="text-xs text-slate-500 font-medium">Saldo terkini bank, e-wallet, dan uang tunai Anda.</p>
+                        </div>
+                        <button onclick="openAddTransactionModal()" class="hs-btn bg-hsBlue text-white px-4 py-2 text-xs flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Tambah Transaksi
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="hs-card wallet-card p-5 bg-blue-50/50 space-y-2">
+                            <div class="flex justify-between items-center text-xs font-extrabold text-hsBlue">
+                                <span><i class="fa-solid fa-building-columns"></i> Bank Ortu</span>
+                                <span class="bg-blue-100 px-2 py-0.5 rounded-full">BCA</span>
+                            </div>
+                            <p id="wallet-bank" class="text-2xl font-black text-hsDark">Rp 350.000</p>
+                            <p class="text-[11px] font-semibold text-slate-400">Transfer Bulanan</p>
+                        </div>
+
+                        <div class="hs-card wallet-card p-5 bg-orange-50/50 space-y-2">
+                            <div class="flex justify-between items-center text-xs font-extrabold text-hsOrange">
+                                <span><i class="fa-solid fa-wallet"></i> Tunai Dompet</span>
+                                <span class="bg-orange-100 px-2 py-0.5 rounded-full">Fisik</span>
+                            </div>
+                            <p id="wallet-tunai" class="text-2xl font-black text-hsDark">Rp 85.000</p>
+                            <p class="text-[11px] font-semibold text-slate-400">Pegangan Saku</p>
+                        </div>
+
+                        <div class="hs-card wallet-card p-5 bg-purple-50/50 space-y-2">
+                            <div class="flex justify-between items-center text-xs font-extrabold text-hsPurple">
+                                <span><i class="fa-solid fa-mobile-screen"></i> E-Wallet</span>
+                                <span class="bg-purple-100 px-2 py-0.5 rounded-full">Gopay</span>
+                            </div>
+                            <p id="wallet-ewallet" class="text-2xl font-black text-hsDark">Rp 125.000</p>
+                            <p class="text-[11px] font-semibold text-slate-400">Digital Payment</p>
+                        </div>
+
+                        <div class="hs-card wallet-card p-5 bg-emerald-50/50 space-y-2">
+                            <div class="flex justify-between items-center text-xs font-extrabold text-hsGreen">
+                                <span><i class="fa-solid fa-piggy-bank"></i> Dana Darurat</span>
+                                <span class="bg-emerald-100 px-2 py-0.5 rounded-full">Target: 500k</span>
+                            </div>
+                            <p id="wallet-darurat" class="text-2xl font-black text-hsDark">Rp 180.000</p>
+                            <p id="wallet-darurat-pct" class="text-[11px] font-semibold text-slate-400">Buffer Safe (36%)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Assistant Widget -->
+                <div class="hs-card p-5 space-y-3 bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-hsPurple text-white rounded-2xl flex items-center justify-center text-lg font-black">
+                            
+                        </div>
+                        <div>
+                            <h4 class="font-black text-base text-hsDark">ForeCash AI Assistant</h4>
+                            <p class="text-xs text-slate-500">Tanya saran hemat atau analisis transaksi otomatis Anda.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="aiQueryInput" placeholder="Contoh: 'Gimana cara hemat jajan minggu ini?'" class="w-full px-4 py-2.5 text-xs rounded-2xl bg-white border border-slate-200">
+                        <button onclick="askAIAssistant()" class="hs-btn bg-hsPurple text-white px-5 text-xs whitespace-nowrap">Tanya AI</button>
+                    </div>
+                    <div id="aiResponseBox" class="hidden p-3 bg-white/80 rounded-2xl border border-purple-100 text-xs text-slate-700 leading-relaxed"></div>
+                </div>
+            </div>
+
+            <!-- ================= PAGE 2: TRANSAKSI ================= -->
+            <div id="page-transaksi" class="page-content space-y-6 hidden">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xl font-black text-hsDark">Modul Transaksi & Anggaran</h3>
+                        <p class="text-xs text-slate-500 font-medium">Kelola pemasukan, pengeluaran, dan catat transaksi dari struk.</p>
+                    </div>
+                    <button onclick="openAddTransactionModal()" class="hs-btn bg-hsOrange text-white px-4 py-2 text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Catat Transaksi
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 hs-card p-5 space-y-4">
+                        <h4 class="text-sm font-black text-hsDark border-b pb-2">Daftar Pemasukan & Pengeluaran</h4>
+                        <div id="transactionListTable" class="space-y-3"></div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="hs-card p-5 space-y-3">
+                            <h4 class="text-sm font-black text-hsDark">Anggaran Harian & Bulanan</h4>
+                            <p class="text-xs text-slate-500">Atur batas pengeluaran harian Anda.</p>
+                            <div class="space-y-2 pt-1">
+                                <label class="text-xs font-bold text-slate-600">Batas Pengeluaran Harian:</label>
+                                <input type="number" id="budgetLimitInput" value="30000" onchange="updateBudgetLimit(this.value)" class="w-full px-3 py-2 text-xs rounded-xl border">
+                                <p id="budgetStatusText" class="text-[11px] font-bold text-hsGreen">✓ Pengeluaran harian Anda masih dalam batas aman.</p>
+                            </div>
+                        </div>
+
+                        <div class="hs-card p-5 space-y-3">
+                            <h4 class="text-sm font-black text-hsDark">Scan Struk Transaksi</h4>
+                            <p class="text-xs text-slate-500">Upload struk untuk catat pengeluaran secara otomatis.</p>
+                            <input type="file" accept="image/*" onchange="simulateOCR(event)" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-hsYellow file:text-hsDark hover:file:bg-hsYellow/80">
+                            <div id="receiptPreview" class="hidden text-center space-y-2 pt-2">
+                                <img id="receiptImage" class="max-h-36 mx-auto rounded-xl border">
+                                <p class="text-[11px] font-bold text-hsGreen">Struk berhasil dibaca: Rp 22.000 (Makan Kantin)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= PAGE 3: UTANG & PATUNGAN ================= -->
+            <div id="page-utang" class="page-content space-y-6 hidden">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xl font-black text-hsDark">Utang & Patungan (Social Money)</h3>
+                        <p class="text-xs text-slate-500 font-medium">Kelola daftar utang, split bill, dan pengingat tagihan teman.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="openSplitBillModal()" class="hs-btn bg-hsPurple text-white px-3 py-2 text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-calculator"></i> Split Bill
+                        </button>
+                        <button onclick="openDebtModal()" class="hs-btn bg-hsGreen text-white px-3 py-2 text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i> Catat Bon
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="debtCardGrid"></div>
+
+                <div class="hs-card p-5 space-y-3 bg-amber-50/40 border-amber-200">
+                    <h4 class="text-sm font-black text-hsDark"><i class="fa-solid fa-clock text-hsOrange"></i> Pengingat Tagihan Otomatis</h4>
+                    <p class="text-xs text-slate-600">Kirim pesan pengingat sopan ke teman yang belum membayar patungan.</p>
+                    <button onclick="sendDebtReminderAll()" class="hs-btn bg-hsOrange text-white px-4 py-2 text-xs">
+                        Kirim Pengingat via WhatsApp
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= PAGE 4: PREDIKSI & NOTIFIKASI ================= -->
+            <div id="page-prediksi" class="page-content space-y-6 hidden">
+                <div>
+                    <h3 class="text-xl font-black text-hsDark">Prediksi & Notifikasi AI</h3>
+                    <p class="text-xs text-slate-500 font-medium">Simulasi burn rate harian, perkiraan tanggal uang habis, dan pengaturan notifikasi.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="hs-card p-6 space-y-4">
+                        <h4 class="text-base font-black text-hsDark border-b pb-2">Parameter Simulasi</h4>
+                        
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-slate-600">Saldo Saat Ini (Rp):</label>
+                            <input type="number" id="projSaldoInput" value="560000" class="w-full px-3 py-2 text-xs font-bold rounded-xl">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-slate-600">Burn Rate Harian (Pengeluaran/Hari):</label>
+                            <input type="number" id="projSpendInput" value="40000" class="w-full px-3 py-2 text-xs font-bold rounded-xl">
+                        </div>
+
+                        <div class="flex items-center gap-2 pt-2">
+                            <input type="checkbox" id="incomeLateCheck" onchange="updateProjection()" class="w-4 h-4 rounded text-hsOrange">
+                            <label for="incomeLateCheck" class="text-xs font-bold text-hsDark">Simulasi Kiriman Terlambat (+5 Hari)</label>
+                        </div>
+
+                        <button onclick="updateProjection()" class="hs-btn bg-hsOrange text-white w-full py-2.5 text-xs">Jalankan Simulasi</button>
+                    </div>
+
+                    <div class="lg:col-span-2 hs-card p-6 space-y-3 flex flex-col justify-between">
+                        <h4 class="text-sm font-black text-hsDark">Grafik Proyeksi Penurunan Saldo</h4>
+                        <div class="h-56 relative w-full">
+                            <canvas id="chartProyeksi"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hs-card p-6 space-y-4">
+                    <h4 class="text-base font-black text-hsDark border-b pb-2">Pengaturan Notifikasi & Peringatan Lokasi</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl">
+                            <div>
+                                <p class="text-xs font-bold text-hsDark">Peringatan Lokasi Kafe/Kantin</p>
+                                <p class="text-[10px] text-slate-500">Notifikasi otomatis saat Anda dekat area jajan.</p>
+                            </div>
+                            <input type="checkbox" checked class="w-5 h-5 text-hsOrange">
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl">
+                            <div>
+                                <p class="text-xs font-bold text-hsDark">Peringatan Burn Rate Harian</p>
+                                <p class="text-[10px] text-slate-500">Notifikasi jika pengeluaran harian melebihi batas.</p>
+                            </div>
+                            <input type="checkbox" checked class="w-5 h-5 text-hsOrange">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= PAGE 5: LAPORAN ================= -->
+            <div id="page-laporan" class="page-content space-y-6 hidden">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xl font-black text-hsDark">Laporan Keuangan Bulanan</h3>
+                        <p class="text-xs text-slate-500 font-medium">Analisis kategori pengeluaran dan ekspor data lengkap.</p>
+                    </div>
+                    <button onclick="exportToExcel()" class="hs-btn bg-hsGreen text-white px-4 py-2 text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-file-excel"></i> Ekspor Excel (.csv)
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="hs-card p-6 space-y-3">
+                        <h4 class="text-sm font-black text-hsDark text-center">Grafik Kategori Pengeluaran</h4>
+                        <div class="h-60 relative">
+                            <canvas id="chartLaporan"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="hs-card p-6 space-y-4">
+                        <h4 class="text-sm font-black text-hsDark">Ringkasan Laporan Bulanan</h4>
+                        <div class="space-y-3 text-xs">
+                            <div class="flex justify-between py-2 border-b">
+                                <span class="text-slate-500">Total Pemasukan:</span>
+                                <span id="reportTotalIncome" class="font-bold text-hsGreen">Rp 0</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b">
+                                <span class="text-slate-500">Total Pengeluaran:</span>
+                                <span id="reportTotalExpense" class="font-bold text-hsRed">Rp 0</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b">
+                                <span class="text-slate-500">Rasio Tabungan:</span>
+                                <span class="font-bold text-hsBlue">24% (Bagus)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= PAGE 6: AKUN ================= -->
+            <div id="page-akun" class="page-content space-y-6 hidden">
+                <div>
+                    <h3 class="text-xl font-black text-hsDark">👤 Pengelolaan Akun & Bantuan</h3>
+                    <p class="text-xs text-slate-500 font-medium">Perbarui profil Anda dan dapatkan bantuan penggunaan aplikasi.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="hs-card p-6 space-y-4">
+                        <h4 class="text-base font-black text-hsDark border-b pb-2">Profil Pengguna</h4>
+                        <div class="text-center space-y-2">
+                            <div class="w-16 h-16 bg-hsPurple text-white font-black text-2xl rounded-full mx-auto flex items-center justify-center">
+                                M
+                            </div>
+                            <h5 id="profileNameDisplay" class="font-bold text-sm text-hsDark">Mahasiswa</h5>
+                            <p class="text-xs text-slate-500">mahasiswa@ui.ac.id</p>
+                        </div>
+                        <button onclick="handleLogout()" class="hs-btn bg-hsRed text-white w-full py-2 text-xs">Keluar Akun</button>
+                    </div>
+
+                    <div class="lg:col-span-2 hs-card p-6 space-y-4">
+                        <h4 class="text-base font-black text-hsDark border-b pb-2">Bantuan & FAQ</h4>
+                        <div class="space-y-3 text-xs">
+                            <div class="p-3 bg-slate-50 rounded-2xl space-y-1">
+                                <p class="font-bold text-hsDark">Bagaimana Early Warning AI bekerja?</p>
+                                <p class="text-slate-600">AI menghitung kecepatan belanja (burn rate) harian Anda lalu membandingkannya dengan jadwal uang kiriman berikutnya.</p>
+                            </div>
+                            <div class="p-3 bg-slate-50 rounded-2xl space-y-1">
+                                <p class="font-bold text-hsDark">Apakah data saya disimpan dengan aman?</p>
+                                <p class="text-slate-600">Seluruh data disimpan secara lokal di browser Anda (LocalStorage) untuk menjamin privasi penuh.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white/60 py-4 px-4 text-center text-xs font-bold text-slate-400 border-t border-hsYellow/20">
+            ForeCash © 2026 — Calm & Transparent Student Financial Planning
+        </footer>
+
+    </div>
+
+    <!-- ================= MODAL TRANSAKSI ================= -->
+    <div id="transactionModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
+        <div class="hs-card w-full max-w-lg p-6 sm:p-7" role="dialog" aria-modal="true">
+            <div class="flex justify-between items-start mb-5">
+                <div><span class="text-xs font-bold text-hsBlue">TRANSAKSI BARU</span><h3 class="text-2xl font-black">Tambah Catatan</h3></div>
+                <button onclick="closeTransactionModal()" class="w-9 h-9 rounded-full bg-slate-100 font-bold">×</button>
+            </div>
+            <form onsubmit="saveTransaction(event)" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="text-xs font-bold">Jenis</label><select id="txType" class="w-full mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200" required><option value="expense">Pengeluaran</option><option value="income">Pemasukan</option></select></div>
+                    <div><label class="text-xs font-bold">Nominal (Rp)</label><input id="txAmount" type="number" min="1000" step="500" placeholder="25000" required class="w-full mt-1 px-4 py-3"></div>
+                </div>
+                <div><label class="text-xs font-bold">Nama Transaksi</label><input id="txName" type="text" placeholder="Contoh: Kopi Susu" required class="w-full mt-1 px-4 py-3"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="text-xs font-bold">Kategori</label><select id="txCategory" class="w-full mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200"><option>Makan & Minum</option><option>Jajan & Kopi</option><option>Akademik</option><option>Hiburan</option><option>Transportasi</option><option>Lainnya</option></select></div>
+                    <div><label class="text-xs font-bold">Dompet</label><select id="txWallet" class="w-full mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200"><option>Bank Ortu</option><option>Tunai Dompet</option><option>E-Wallet</option><option>Dana Darurat</option></select></div>
+                </div>
+                <button class="hs-btn bg-hsBlue text-white w-full py-3.5">Simpan Transaksi</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL UTANG ================= -->
+    <div id="debtModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
+        <div class="hs-card w-full max-w-lg p-6 sm:p-7">
+            <div class="flex justify-between items-start mb-5"><div><span class="text-xs font-bold text-hsGreen">UTANG & PATUNGAN</span><h3 class="text-2xl font-black">Catat Bon Baru</h3></div><button onclick="closeDebtModal()" class="w-9 h-9 rounded-full bg-slate-100 font-bold">×</button></div>
+            <form onsubmit="saveDebt(event)" class="space-y-4">
+                <div><label class="text-xs font-bold">Nama Teman</label><input id="debtName" required placeholder="Andi" class="w-full mt-1 px-4 py-3"></div>
+                <div><label class="text-xs font-bold">Keperluan / Keterangan</label><input id="debtReason" required placeholder="Split bill makan" class="w-full mt-1 px-4 py-3"></div>
+                <div><label class="text-xs font-bold">Nominal (Rp)</label><input id="debtAmount" type="number" min="1000" required placeholder="25000" class="w-full mt-1 px-4 py-3"></div>
+                <div><label class="text-xs font-bold">Posisi Utang</label><select id="debtDirection" class="w-full mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200"><option value="owedToMe">Dia utang ke saya</option><option value="iOwe">Saya utang ke dia</option></select></div>
+                <button class="hs-btn bg-hsGreen text-white w-full py-3.5">Simpan Catatan Bon</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL SPLIT BILL ================= -->
+    <div id="splitBillModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
+        <div class="hs-card w-full max-w-lg p-6 sm:p-7">
+            <div class="flex justify-between items-start mb-5"><div><span class="text-xs font-bold text-hsPurple">SPLIT BILL CALCULATOR</span><h3 class="text-2xl font-black">Hitung Pembagian Bill</h3></div><button onclick="closeSplitBillModal()" class="w-9 h-9 rounded-full bg-slate-100 font-bold">×</button></div>
+            <div class="space-y-4">
+                <div><label class="text-xs font-bold">Jumlah Total Bill (Rp)</label><input id="sbTotal" type="number" placeholder="100000" class="w-full mt-1 px-4 py-3"></div>
+                <div><label class="text-xs font-bold">Jumlah Orang</label><input id="sbPeople" type="number" min="1" value="2" class="w-full mt-1 px-4 py-3"></div>
+                <button onclick="calculateSplitBill()" class="hs-btn bg-hsPurple text-white w-full py-3">Hitung Pembagian</button>
+                <div id="sbResult" class="hidden p-4 bg-purple-50 rounded-2xl text-center space-y-1">
+                    <p class="text-xs font-bold text-slate-600">Setiap orang membayar:</p>
+                    <p id="sbPerPersonText" class="text-2xl font-black text-hsPurple">Rp 0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-5 right-5 z-[100] hidden max-w-sm bg-hsDark text-white px-5 py-3 rounded-full shadow-xl text-sm font-bold"></div>
+
+    <!-- Fail JS Terpisah -->
+    <script src="app.js"></script>
+</body>
+</html>
