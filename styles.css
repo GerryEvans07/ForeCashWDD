@@ -1,0 +1,191 @@
+:root {
+    --hs-cream: #F3F0E7;
+    --hs-cream-2: #FBF9F2;
+    --hs-orange: #FF7043;
+    --hs-orange-dark: #E85D32;
+    --hs-yellow: #FFC83D;
+    --hs-yellow-soft: #FFF0B8;
+    --hs-blue: #5B8DEF;
+    --hs-blue-soft: #E8F0FF;
+    --hs-purple: #8B6FE8;
+    --hs-green: #43B883;
+    --hs-red: #E96868;
+    --hs-ink: #292929;
+    --hs-muted: #77736D;
+    --hs-border: rgba(41,41,41,.08);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--hs-cream);
+    color: var(--hs-ink);
+    overflow-x: hidden;
+    letter-spacing: -0.01em;
+}
+
+h1, h2, h3, h4, h5, .hs-heading {
+    font-family: 'Fredoka', sans-serif;
+    letter-spacing: -0.025em;
+}
+
+::selection {
+    background: var(--hs-yellow);
+    color: var(--hs-ink);
+}
+
+.hs-card {
+    background: rgba(255,255,255,.94);
+    border: 1px solid var(--hs-border);
+    border-radius: 28px;
+    box-shadow: 0 4px 0 rgba(41,41,41,.04), 0 12px 32px rgba(41,41,41,.055);
+    transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.hs-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 rgba(41,41,41,.05), 0 18px 38px rgba(41,41,41,.075);
+}
+
+.hs-btn {
+    font-family: 'Fredoka', sans-serif;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: .01em;
+    border: 0;
+    transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+    box-shadow: 0 4px 0 rgba(41,41,41,.12);
+}
+
+.hs-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.02);
+    box-shadow: 0 6px 0 rgba(41,41,41,.14);
+}
+
+.hs-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 rgba(41,41,41,.12);
+}
+
+.nav-tab {
+    font-family: 'Fredoka', sans-serif;
+    border-radius: 999px;
+    transition: all .2s ease;
+    color: #76716A;
+    background: transparent;
+}
+
+.nav-tab:hover {
+    background: rgba(255,255,255,.7);
+    color: var(--hs-ink);
+}
+
+.nav-tab.active {
+    background: var(--hs-orange);
+    color: white;
+    box-shadow: 0 4px 0 rgba(232,93,50,.18);
+}
+
+input:not([type="range"]):not([type="checkbox"]), select {
+    border-color: rgba(41,41,41,.09) !important;
+    background: #FAF9F5 !important;
+    border-radius: 18px !important;
+    color: var(--hs-ink);
+}
+
+input:not([type="range"]):not([type="checkbox"]):focus, select:focus {
+    border-color: var(--hs-orange) !important;
+    box-shadow: 0 0 0 4px rgba(255,112,67,.12) !important;
+}
+
+.character-bounce {
+    animation: characterFloat 4s ease-in-out infinite;
+}
+
+@keyframes characterFloat {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-9px) rotate(1deg); }
+}
+
+.hs-eye {
+    transform-origin: center;
+    animation: eyeBlink 5s infinite;
+}
+
+@keyframes eyeBlink {
+    0%, 91%, 100% { transform: scaleY(1); }
+    94% { transform: scaleY(.08); }
+}
+
+.wallet-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.wallet-card::after {
+    content: "";
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    right: -28px;
+    top: -30px;
+    background: rgba(255,255,255,.38);
+}
+
+#loginPage {
+    background:
+        radial-gradient(circle at 15% 15%, rgba(255,200,61,.22), transparent 24%),
+        radial-gradient(circle at 85% 80%, rgba(91,141,239,.12), transparent 25%),
+        var(--hs-cream);
+}
+
+#loginPage .hs-card {
+    background: rgba(255,255,255,.96);
+}
+
+#mainDashboard {
+    background:
+        radial-gradient(circle at 92% 2%, rgba(255,200,61,.14), transparent 20%),
+        radial-gradient(circle at 5% 45%, rgba(112,182,255,.07), transparent 24%),
+        var(--hs-cream);
+}
+
+header {
+    background: rgba(243,240,231,.90) !important;
+    border-bottom-color: rgba(255,112,67,.12) !important;
+}
+
+footer {
+    background: rgba(255,255,255,.55) !important;
+    border-top-color: rgba(41,41,41,.06) !important;
+}
+
+#page-dashboard > div:first-child {
+    box-shadow: 0 6px 0 rgba(232,93,50,.10), 0 18px 42px rgba(41,41,41,.07);
+}
+
+#page-dashboard > div:first-child,
+#page-dashboard .bg-hsYellow {
+    background: linear-gradient(135deg, #FFD85A 0%, #FFC83D 100%);
+}
+
+canvas {
+    max-width: 100%;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #D9D2C5;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
