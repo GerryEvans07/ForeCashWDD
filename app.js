@@ -31,6 +31,12 @@ function tgl(dateStr) {
 }
 function thisMonth() { return today().slice(0, 7); }
 
+// konfirmasi nominal besar supaya salah ketik (kelebihan nol) tidak langsung tersimpan
+const BATAS_KONFIRMASI = 5000000;
+function yakinNominal(n) {
+    return n < BATAS_KONFIRMASI || confirm(`Yakin nominalnya ${rupiah(n)}?\n\nPeriksa lagi jumlah angka nol sebelum menyimpan.`);
+}
+
 function toast(msg, isError = false) {
     let t = $('#toast');
     if (!t) {
@@ -69,8 +75,8 @@ function seedDB() {
     cat('Pelunasan Utang/Piutang', 'pemasukan'); cat('Pelunasan Utang/Piutang', 'pengeluaran');
 
     // akun demo
-    db.users.push({ user_id: id('users'), nama: 'Momo Mahasiswa', email: 'demo@forecash.id', password: 'demo12345', role: 'mahasiswa', kode_hubung: 'DEMO2026', batas_harian: 45000 });
-    db.users.push({ user_id: id('users'), nama: 'Ibu Momo', email: 'ortu@forecash.id', password: 'demo12345', role: 'orangtua', kode_hubung: null, batas_harian: 0 });
+    db.users.push({ user_id: id('users'), nama: 'Momo Mahasiswa', email: 'demo@forecash.id', password: 'demo12345', role: 'mahasiswa', kode_hubung: 'DEMO2026', batas_harian: 45000, avatar: 'a2' });
+    db.users.push({ user_id: id('users'), nama: 'Ibu Momo', email: 'ortu@forecash.id', password: 'demo12345', role: 'orangtua', kode_hubung: null, batas_harian: 0, avatar: 'a4' });
     db.parent_links.push({ link_id: id('parent_links'), parent_id: 2, student_id: 1 });
 
     const w = (nama, tipe, saldo_awal) => db.wallets.push({ wallet_id: id('wallets'), user_id: 1, nama, tipe, saldo_awal });
@@ -193,7 +199,8 @@ function renderLayout(user, active) {
            ['transaksi', 'transaksi.html', 'fa-receipt', 'Transaksi'],
            ['utang', 'utang.html', 'fa-users', 'Utang & Patungan'],
            ['prediksi', 'prediksi.html', 'fa-chart-line', 'Prediksi & Notifikasi'],
-           ['laporan', 'laporan.html', 'fa-chart-pie', 'Laporan']];
+           ['laporan', 'laporan.html', 'fa-chart-pie', 'Laporan'],
+           ['pencapaian', 'pencapaian.html', 'fa-trophy', 'Pencapaian']];
 
     $('#appHeader').innerHTML = `
         ${user.role === 'orangtua' ? `<div class="bg-purple-600 text-white text-xs font-bold py-2 px-4 text-center">
@@ -214,7 +221,7 @@ function renderLayout(user, active) {
             </nav>
             <div class="flex items-center gap-2">
               <a href="akun.html" class="nav-tab ${active === 'akun' ? 'active' : ''} flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-slate-100">
-                <span class="w-6 h-6 rounded-full bg-hsPurple text-white font-black text-xs flex items-center justify-center">${esc(user.nama[0].toUpperCase())}</span>
+                <span class="w-7 h-7 rounded-full bg-hsYellow/40 overflow-hidden flex items-end justify-center">${avatarSVG(user.avatar, 'happy', 28)}</span>
                 <span class="text-xs font-bold text-hsDark">${esc(user.nama.split(' ')[0])}</span>
                 <span class="text-[9px] bg-hsYellow text-hsDark px-2 py-0.5 rounded-full font-black uppercase">${user.role === 'orangtua' ? 'Orang Tua' : 'Mahasiswa'}</span>
               </a>
@@ -227,7 +234,7 @@ function renderLayout(user, active) {
         ForeCash © 2026 — Calm & Transparent Student Financial Planning</footer>`;
 }
 
-function warningHTML(f) {
+function warningHTML(f, avatarId = 'a1') {
     const warna = { aman: 'bg-emerald-100', waspada: 'bg-hsYellow', kritis: 'bg-red-200' }[f.status];
     const label = { aman: 'Aman', waspada: 'Waspada', kritis: 'Kritis' }[f.status];
     const pct = (f.runway !== null && f.sisaHari) ? Math.min(100, Math.round(f.runway / Math.max(1, f.sisaHari) * 100)) : 100;
@@ -257,10 +264,11 @@ function warningHTML(f) {
           <div class="w-full bg-white/60 rounded-full h-4 p-0.5"><div class="bg-hsOrange h-full rounded-full" style="width:${pct}%"></div></div>
         </div>` : ''}
       </div>
-      <div class="w-32 h-32 shrink-0 character-bounce">
-        <div class="w-32 h-32 bg-hsOrange rounded-full shadow-lg flex flex-col items-center justify-center border-4 border-white">
-          <div class="flex gap-4 mb-2"><div class="w-4 h-5 bg-hsDark rounded-full hs-eye"></div><div class="w-4 h-5 bg-hsDark rounded-full hs-eye"></div></div>
-          ${f.status === 'aman' ? '<div class="w-8 h-4 border-b-4 border-hsDark rounded-full"></div>' : '<div class="w-8 h-2 bg-hsDark rounded-full"></div>'}
+      <!-- maskot bereaksi: ekspresi avatar mengikuti status keuangan -->
+      <div class="shrink-0 flex flex-col items-center gap-2">
+        <div class="bg-white rounded-2xl px-3 py-1.5 text-xs font-bold shadow-sm">${{ aman: 'Aman, lanjutkan!', waspada: 'Hati-hati ya...', kritis: 'Gawat, rem dulu!' }[f.status]}</div>
+        <div class="w-32 h-32 bg-white/70 rounded-full flex items-end justify-center overflow-hidden border-4 border-white shadow-lg character-bounce">
+          ${avatarSVG(avatarId, { aman: 'happy', waspada: 'neutral', kritis: 'worried' }[f.status], 116)}
         </div>
       </div>
     </div>`;
@@ -337,6 +345,7 @@ pages.login = function () {
     }
     $('#tabMasuk').onclick = () => setMode('masuk');
     $('#tabDaftar').onclick = () => setMode('daftar');
+    $('#avatarPicker').innerHTML = avatarPickerHTML('a1');
     setMode(location.hash === '#daftar' ? 'daftar' : 'masuk');
 
     $('#authForm').onsubmit = e => {
@@ -348,7 +357,8 @@ pages.login = function () {
             if (!nama) return err('Nama wajib diisi.');
             if (pass.length < 8) return err('Kata sandi minimal 8 karakter.');
             if (DB.users.some(x => x.email === email)) return err('Email sudah digunakan.');
-            const user = { user_id: nextId('users'), nama, email, password: pass, role, kode_hubung: role === 'mahasiswa' ? makeCode() : null, batas_harian: 0 };
+            const avatar = ($('input[name=avatar]:checked') || {}).value || 'a1';
+            const user = { user_id: nextId('users'), nama, email, password: pass, role, kode_hubung: role === 'mahasiswa' ? makeCode() : null, batas_harian: 0, avatar };
             DB.users.push(user);
             if (role === 'mahasiswa') DB.wallets.push({ wallet_id: nextId('wallets'), user_id: user.user_id, nama: 'Utama', tipe: 'tunai', saldo_awal: 0 });
             commit();
@@ -367,7 +377,7 @@ pages.login = function () {
 pages.dashboard = function (user) {
     const uid = user.user_id, f = forecast(uid);
     const belum = DB.debts.filter(d => d.user_id === uid && d.status === 'belum');
-    $('#warning').innerHTML = warningHTML(f);
+    $('#warning').innerHTML = warningHTML(f, user.avatar);
     $('#statSaldo').textContent = rupiah(f.saldo);
     $('#statBurn').textContent = rupiah(f.burn);
     $('#statBurnInfo').textContent = `rata-rata ${f.hari} hari terakhir`;
@@ -384,6 +394,7 @@ pages.dashboard = function (user) {
 
     const recent = txOf(uid).sort((a, b) => b.tanggal.localeCompare(a.tanggal) || b.transaction_id - a.transaction_id).slice(0, 5);
     $('#recentList').innerHTML = recent.length ? recent.map(t => txRowHTML(t, false)).join('') : '<p class="text-xs text-slate-500">Belum ada transaksi.</p>';
+    renderGameStrip(user);
 };
 
 /* ---------- KELOLA WALLET ---------- */
@@ -428,6 +439,7 @@ pages.wallet = function (user) {
         e.preventDefault();
         const nama = $('#namaBaru').value.trim();
         if (!nama) return toast('Nama wallet wajib diisi.', true);
+        if (!yakinNominal(Number($('#saldoBaru').value) || 0)) return;
         DB.wallets.push({ wallet_id: nextId('wallets'), user_id: uid, nama, tipe: $('#tipeBaru').value, saldo_awal: Math.max(0, Number($('#saldoBaru').value) || 0) });
         commit(); e.target.reset(); render(); toast('Wallet ditambahkan.');
     };
@@ -483,6 +495,7 @@ pages.transaksi = function (user) {
         e.preventDefault();
         const v = validate();
         if (typeof v === 'string') return toast(v, true);
+        if (!yakinNominal(v.nominal)) return;
         if (editingId) {
             Object.assign(DB.transactions.find(t => t.transaction_id === editingId && t.user_id === uid), v);
             toast('Transaksi diperbarui.');
@@ -630,6 +643,7 @@ pages.utang = function (user) {
         const total = Number($('#sbTotal').value), judul = $('#sbJudul').value.trim() || 'Split bill';
         const teman = $('#sbTeman').value.split(',').map(s => s.trim()).filter(Boolean);
         if (!(total > 0) || !teman.length) return toast('Isi total tagihan dan minimal satu nama teman.', true);
+        if (!yakinNominal(total)) return;
         const per = Math.round(total / (teman.length + ($('#sbSaya').checked ? 1 : 0)));
         teman.forEach(n => DB.debts.push({ debt_id: nextId('debts'), user_id: uid, nama_teman: n, keterangan: judul, nominal: per, arah: 'piutang', status: 'belum', jatuh_tempo: $('#sbTempo').value || null }));
         commit(); e.target.reset(); sbPreview(); render(); toast(`Split bill dibuat: ${rupiah(per)} per orang.`);
@@ -639,6 +653,7 @@ pages.utang = function (user) {
         e.preventDefault();
         const nama = $('#dNama').value.trim(), ket = $('#dKet').value.trim(), nom = Number($('#dNominal').value);
         if (!nama || !ket || !(nom > 0)) return toast('Nama teman, keterangan, dan nominal wajib diisi.', true);
+        if (!yakinNominal(nom)) return;
         DB.debts.push({ debt_id: nextId('debts'), user_id: uid, nama_teman: nama, keterangan: ket, nominal: nom, arah: $('#dArah').value, status: 'belum', jatuh_tempo: $('#dTempo').value || null });
         commit(); e.target.reset(); render(); toast('Catatan disimpan.');
     };
@@ -652,7 +667,7 @@ pages.prediksi = function (user) {
 
     function render() {
         f = forecast(uid);
-        $('#warning').innerHTML = warningHTML(f);
+        $('#warning').innerHTML = warningHTML(f, user.avatar);
         $('#infoRumus').textContent = `Dihitung otomatis dari transaksi: burn rate = total pengeluaran ${f.hari} hari terakhir ÷ ${f.hari}.`;
         $('#hSaldo').textContent = rupiah(f.saldo);
         $('#hBurn').textContent = rupiah(f.burn) + '/hari';
@@ -730,6 +745,7 @@ pages.prediksi = function (user) {
         e.preventDefault();
         const sumber = $('#jSumber').value.trim(), nominal = Number($('#jNominal').value), tanggal = $('#jTanggal').value;
         if (!sumber || !(nominal > 0) || !tanggal) return toast('Sumber, nominal, dan tanggal wajib diisi.', true);
+        if (!yakinNominal(nominal)) return;
         DB.income_schedules.push({ schedule_id: nextId('income_schedules'), user_id: uid, sumber, nominal, tanggal_perkiraan: tanggal, status: 'menunggu' });
         commit(); e.target.reset(); render(); toast('Jadwal pemasukan ditambahkan.');
     };
@@ -769,13 +785,14 @@ pages.akun = function (user) {
     $('#pNama').value = user.nama;
     $('#pEmail').value = user.email;
     $('#pRole').textContent = user.role === 'orangtua' ? 'Orang Tua' : 'Mahasiswa';
+    $('#avatarPicker').innerHTML = avatarPickerHTML(user.avatar || 'a1');
 
     $('#formProfil').onsubmit = e => {
         e.preventDefault();
         const nama = $('#pNama').value.trim(), email = $('#pEmail').value.trim().toLowerCase();
         if (!nama) return toast('Nama wajib diisi.', true);
         if (DB.users.some(u => u.email === email && u.user_id !== uid)) return toast('Email sudah dipakai akun lain.', true);
-        Object.assign(user, { nama, email });
+        Object.assign(user, { nama, email, avatar: ($('input[name=avatar]:checked') || {}).value || user.avatar });
         commit(); renderLayout(user, 'akun'); toast('Profil diperbarui.');
     };
     $('#formPassword').onsubmit = e => {
@@ -823,7 +840,7 @@ pages.ortu = function (user) {
         if (!selected) return;
 
         const f = forecast(selected), r = reportData(selected, thisMonth());
-        $('#warning').innerHTML = warningHTML(f);
+        $('#warning').innerHTML = warningHTML(f, DB.users.find(u => u.user_id === selected).avatar);
         $('#oSaldo').textContent = rupiah(f.saldo);
         $('#oBurn').textContent = rupiah(f.burn);
         $('#oMasuk').textContent = rupiah(r.masuk);
@@ -848,6 +865,325 @@ pages.ortu = function (user) {
     render();
 };
 
+/* =====================================================================
+   AVATAR — karakter flat geometric orisinal ForeCash (SVG)
+   ===================================================================== */
+const AVATARS = {
+    a1: { nama: 'Koko', kulit: '#F2C9A0', rambut: '#6B4226', gaya: 'bob',    baju: '#5B8DEF', ekstra: ['freckles'] },
+    a2: { nama: 'Rara', kulit: '#FFD9C2', rambut: '#E8590C', gaya: 'bun',    baju: '#43B883', ekstra: [] },
+    a3: { nama: 'Bima', kulit: '#8D5A3B', rambut: '#2B1B14', gaya: 'curly',  baju: '#FFC83D', ekstra: [] },
+    a4: { nama: 'Lili', kulit: '#F6D2B8', rambut: '#1F2937', gaya: 'swoop',  baju: '#8B6FE8', ekstra: ['bow'] },
+    a5: { nama: 'Dodo', kulit: '#C68B59', rambut: '#3B2F2F', gaya: 'spiky',  baju: '#FF7043', ekstra: ['glasses'] },
+    a6: { nama: 'Nana', kulit: '#BFD7FF', rambut: '#3056D3', gaya: 'beanie', baju: '#E96868', ekstra: [] }
+};
+
+// mood: 'happy' (aman) | 'neutral' (waspada) | 'worried' (kritis)
+function avatarSVG(id, mood = 'happy', size = 64) {
+    const a = AVATARS[id] || AVATARS.a1, ink = '#292929';
+    const rambutBelakang = {
+        bob: `<rect x="12" y="16" width="76" height="62" rx="24" fill="${a.rambut}"/>`,
+        bun: `<circle cx="50" cy="12" r="11" fill="${a.rambut}"/>`,
+        swoop: `<rect x="14" y="18" width="72" height="54" rx="22" fill="${a.rambut}"/>`,
+        curly: '', spiky: '', beanie: ''
+    }[a.gaya];
+    const rambutDepan = {
+        bob: `<path d="M18 42 C18 22 32 16 50 16 C68 16 82 22 82 42 C74 34 62 32 50 33 C38 32 26 34 18 42 Z" fill="${a.rambut}"/>`,
+        bun: `<path d="M18 40 C18 22 32 18 50 18 C68 18 82 22 82 40 C70 32 30 32 18 40 Z" fill="${a.rambut}"/>`,
+        swoop: `<path d="M18 46 C16 22 34 14 52 15 C70 16 84 24 82 40 C70 30 52 28 40 34 C30 38 24 42 18 46 Z" fill="${a.rambut}"/>`,
+        curly: [22, 33, 44, 56, 67, 78].map(x => `<circle cx="${x}" cy="26" r="9" fill="${a.rambut}"/>`).join('')
+               + [28, 40, 52, 64, 74].map(x => `<circle cx="${x}" cy="18" r="9" fill="${a.rambut}"/>`).join(''),
+        spiky: `<polygon points="18,42 19,18 30,26 36,10 46,23 54,8 62,23 70,12 74,26 82,18 82,42 70,32 50,30 30,32" fill="${a.rambut}"/>`,
+        beanie: `<rect x="14" y="12" width="72" height="26" rx="13" fill="${a.rambut}"/><rect x="14" y="31" width="72" height="8" rx="4" fill="#1E3A8A"/><circle cx="50" cy="10" r="6" fill="#FFC83D"/>`
+    }[a.gaya];
+
+    const alis = {
+        happy:   `<path d="M31 41 L44 41 M56 41 L69 41" />`,
+        neutral: `<path d="M31 42 L44 41 M56 41 L69 42" />`,
+        worried: `<path d="M31 43 L44 38 M56 38 L69 43" />`
+    }[mood];
+    const mulut = {
+        happy:   `<path d="M43 69 Q50 77 57 69" fill="none"/>`,
+        neutral: `<path d="M45 72 L55 72"/>`,
+        worried: `<path d="M44 74 Q50 68 56 74" fill="none"/>`
+    }[mood];
+    const ekstra = a.ekstra.map(e => ({
+        freckles: [30, 34, 66, 70].map((x, i) => `<circle cx="${x}" cy="${i % 2 ? 64 : 62}" r="1.3" fill="#A0522D"/>`).join(''),
+        glasses: `<g fill="none" stroke="${ink}" stroke-width="2.5"><circle cx="38" cy="54" r="12"/><circle cx="62" cy="54" r="12"/><path d="M50 54 L50 54"/><path d="M47 53 Q50 50 53 53"/></g>`,
+        bow: `<g fill="#F472B6"><polygon points="70,20 80,14 80,26"/><polygon points="90,20 80,14 80,26"/><circle cx="80" cy="20" r="3"/></g>`
+    }[e])).join('');
+
+    return `<svg viewBox="0 0 100 108" width="${size}" height="${size * 1.08}" role="img" aria-label="Avatar ${a.nama}">
+      ${rambutBelakang}
+      <rect x="40" y="80" width="20" height="10" fill="${a.kulit}"/>
+      <rect x="24" y="86" width="52" height="22" rx="10" fill="${a.baju}"/>
+      <rect x="18" y="22" width="64" height="64" rx="20" fill="${a.kulit}"/>
+      <circle cx="17" cy="56" r="6" fill="${a.kulit}"/><circle cx="83" cy="56" r="6" fill="${a.kulit}"/>
+      ${rambutDepan}
+      <g stroke="${ink}" stroke-width="3.5" stroke-linecap="round">${alis}</g>
+      <circle cx="38" cy="54" r="9" fill="#fff"/><circle cx="62" cy="54" r="9" fill="#fff"/>
+      <circle cx="${mood === 'worried' ? 38 : 39}" cy="${mood === 'worried' ? 52 : 55}" r="4.5" fill="${ink}" class="hs-eye"/>
+      <circle cx="${mood === 'worried' ? 62 : 63}" cy="${mood === 'worried' ? 52 : 55}" r="4.5" fill="${ink}" class="hs-eye"/>
+      <ellipse cx="29" cy="68" rx="6" ry="3.5" fill="#F472B6" opacity=".4"/><ellipse cx="71" cy="68" rx="6" ry="3.5" fill="#F472B6" opacity=".4"/>
+      <g stroke="${ink}" stroke-width="3" stroke-linecap="round">${mulut}</g>
+      ${ekstra}
+    </svg>`;
+}
+
+function avatarPickerHTML(selected) {
+    return Object.entries(AVATARS).map(([id, a]) => `
+      <label class="cursor-pointer text-center">
+        <input type="radio" name="avatar" value="${id}" class="peer sr-only" ${id === selected ? 'checked' : ''}>
+        <span class="block rounded-2xl bg-slate-50 border-2 border-transparent peer-checked:border-hsOrange peer-checked:bg-orange-50 p-1.5 transition-all">
+          ${avatarSVG(id, 'happy', 52)}
+        </span>
+        <span class="text-[10px] font-bold text-slate-500">${a.nama}</span>
+      </label>`).join('');
+}
+
+/* =====================================================================
+   GAMIFICATION — hadiah untuk kebiasaan baik, bukan untuk belanja
+   ===================================================================== */
+const LEVELS = [
+    [0, 'Pemula'], [200, 'Hemat Muda'], [400, 'Pengatur Cerdas'], [600, 'Master Budget'], [800, 'Legenda ForeCash']
+];
+
+// berapa hari berturut-turut pengguna mencatat transaksi (boleh belum mencatat hari ini)
+function hitungStreak(uid) {
+    const hari = new Set(txOf(uid).map(t => t.tanggal));
+    let d = hari.has(today()) ? today() : addDays(today(), -1), n = 0;
+    while (hari.has(d)) { n++; d = addDays(d, -1); }
+    return n;
+}
+
+function senin(dateStr) { const d = new Date(dateStr + 'T00:00:00'); const g = (d.getDay() + 6) % 7; return addDays(dateStr, -g); }
+
+function gamify(user) {
+    const uid = user.user_id, tx = txOf(uid), streak = hitungStreak(uid);
+    const debts = DB.debts.filter(d => d.user_id === uid);
+    const keluarPada = tgl => tx.filter(t => t.jenis === 'pengeluaran' && t.tanggal === tgl).reduce((s, t) => s + t.nominal, 0);
+
+    let hariHemat = 0;
+    if (user.batas_harian > 0) for (let i = 0; i < 7; i++) if (keluarPada(addDays(today(), -i)) <= user.batas_harian) hariHemat++;
+    const utangAktif = debts.filter(d => d.arah === 'utang' && d.status === 'belum').length;
+    const piutangLunas = debts.filter(d => d.arah === 'piutang' && d.status === 'lunas').length;
+    const punyaJadwal = DB.income_schedules.some(s => s.user_id === uid);
+    const status = forecast(uid).status;
+
+    const badges = [
+        { icon: '📝', nama: 'Pencatat Pemula', ket: 'Catat 10 transaksi', now: Math.min(tx.length, 10), max: 10 },
+        { icon: '🔥', nama: 'Rajin Mencatat', ket: 'Streak mencatat 7 hari', now: Math.min(streak, 7), max: 7 },
+        { icon: '🐷', nama: 'Hemat Seminggu', ket: user.batas_harian > 0 ? '7 hari terakhir di bawah batas harian' : 'Atur batas harian dulu di menu Transaksi', now: hariHemat, max: 7 },
+        { icon: '🤝', nama: 'Bebas Utang', ket: 'Tidak punya utang yang belum lunas', now: debts.length && !utangAktif ? 1 : 0, max: 1 },
+        { icon: '💸', nama: 'Penagih Andal', ket: 'Lunasi 3 piutang dari teman', now: Math.min(piutangLunas, 3), max: 3 },
+        { icon: '📅', nama: 'Perencana', ket: 'Tambahkan jadwal pemasukan', now: punyaJadwal ? 1 : 0, max: 1 },
+        { icon: '🛡️', nama: 'Aman Terkendali', ket: 'Status peringatan sedang Aman', now: status === 'aman' ? 1 : 0, max: 1 }
+    ].map(b => ({ ...b, dapat: b.now >= b.max }));
+
+    const poin = badges.filter(b => b.dapat).length * 100 + Math.min(streak, 30) * 10;
+    let li = 0; LEVELS.forEach(([min], i) => { if (poin >= min) li = i; });
+    const next = LEVELS[li + 1];
+
+    // tantangan mingguan: makan & minum < Rp200.000 (Senin–Minggu)
+    const awal = senin(today()), batasTantangan = 200000;
+    const makan = tx.filter(t => t.jenis === 'pengeluaran' && t.tanggal >= awal && categoryName(t.category_id) === 'Makan & Minum').reduce((s, t) => s + t.nominal, 0);
+
+    return { streak, badges, poin, level: li + 1, levelNama: LEVELS[li][1], nextPoin: next ? next[0] : null, nextNama: next ? next[1] : null,
+             prevPoin: LEVELS[li][0], tantangan: { judul: 'Makan & minum minggu ini di bawah ' + rupiah(batasTantangan), now: makan, max: batasTantangan, sisaHari: 6 - diffDays(awal, today()) } };
+}
+
+function levelBarHTML(g) {
+    const pct = g.nextPoin ? Math.round((g.poin - g.prevPoin) / (g.nextPoin - g.prevPoin) * 100) : 100;
+    return `<div class="flex justify-between text-xs font-bold"><span>Level ${g.level} · ${g.levelNama}</span><span>${g.poin} poin</span></div>
+      <div class="w-full bg-slate-100 rounded-full h-3 mt-1"><div class="bg-hsPurple h-3 rounded-full" style="width:${pct}%"></div></div>
+      <p class="text-[10px] text-slate-500 mt-1">${g.nextPoin ? `${g.nextPoin - g.poin} poin lagi menuju ${g.nextNama}` : 'Level tertinggi tercapai!'}</p>`;
+}
+
+function tantanganHTML(t) {
+    const pct = Math.min(100, Math.round(t.now / t.max * 100)), lewat = t.now > t.max;
+    return `<p class="text-sm font-bold">${t.judul}</p>
+      <div class="w-full bg-slate-100 rounded-full h-3 mt-2"><div class="${lewat ? 'bg-hsRed' : 'bg-hsGreen'} h-3 rounded-full" style="width:${pct}%"></div></div>
+      <p class="text-[11px] mt-1 ${lewat ? 'text-hsRed font-bold' : 'text-slate-500'}">${rupiah(t.now)} terpakai · ${lewat ? 'tantangan gagal minggu ini' : `sisa ${rupiah(t.max - t.now)}, ${t.sisaHari} hari lagi`}</p>`;
+}
+
+/* ---------- strip gamification di dashboard ---------- */
+function renderGameStrip(user) {
+    const g = gamify(user), dapat = g.badges.filter(b => b.dapat);
+    $('#gameStrip').innerHTML = `
+      <div class="hs-card p-5 flex items-center gap-4">
+        <div class="text-4xl">🔥</div>
+        <div><p class="text-2xl font-black">${g.streak} hari</p><p class="text-xs text-slate-500">${g.streak ? 'berturut-turut mencatat' : 'Mulai streak dengan mencatat hari ini'}</p></div>
+      </div>
+      <div class="hs-card p-5">${levelBarHTML(g)}
+        <p class="text-lg mt-1">${dapat.map(b => `<span title="${esc(b.nama)}">${b.icon}</span>`).join(' ') || '<span class="text-xs text-slate-400">Belum ada badge</span>'}</p></div>
+      <a href="pencapaian.html" class="hs-card p-5 block">${tantanganHTML(g.tantangan)}
+        <p class="text-[11px] font-bold text-hsOrange mt-2">Lihat semua pencapaian →</p></a>`;
+}
+
+/* ---------- halaman pencapaian ---------- */
+pages.pencapaian = function (user) {
+    const g = gamify(user);
+    $('#profilGame').innerHTML = `
+      <div class="w-24 h-24 bg-hsYellow/40 rounded-full flex items-end justify-center overflow-hidden shrink-0">${avatarSVG(user.avatar, 'happy', 88)}</div>
+      <div class="flex-1 min-w-[200px]">
+        <p class="text-xl font-black">${esc(user.nama)}</p>
+        <div class="mt-2">${levelBarHTML(g)}</div>
+      </div>
+      <div class="text-center"><p class="text-4xl">🔥</p><p class="text-xl font-black">${g.streak} hari</p><p class="text-[11px] text-slate-500">streak</p></div>`;
+    $('#tantangan').innerHTML = tantanganHTML(g.tantangan);
+    $('#badgeGrid').innerHTML = g.badges.map(b => `
+      <div class="hs-card p-5 text-center space-y-2 ${b.dapat ? '' : 'opacity-60'}">
+        <div class="text-4xl ${b.dapat ? '' : 'grayscale'}">${b.icon}</div>
+        <p class="text-sm font-black">${b.nama}</p>
+        <p class="text-[11px] text-slate-500">${esc(b.ket)}</p>
+        ${b.dapat ? '<span class="inline-block text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">TERCAPAI · +100</span>'
+                  : `<div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-hsOrange h-2 rounded-full" style="width:${Math.round(b.now / b.max * 100)}%"></div></div>
+                     <p class="text-[10px] font-bold">${b.now}/${b.max}</p>`}
+      </div>`).join('');
+};
+
+/* =====================================================================
+   FORECASH ASSISTANT — chatbot mengambang (bisa digeser)
+   Menjawab berdasarkan data pengguna sendiri (berbasis aturan, tanpa API)
+   ===================================================================== */
+
+function jawabBot(user, teks) {
+    const q = teks.toLowerCase(), uid = user.user_id, f = forecast(uid);
+    const ada = (...k) => k.some(w => q.includes(w));
+
+    if (ada('saldo', 'uang aku', 'uangku', 'duit')) {
+        const w = walletsWithBalance(uid).map(x => `• ${esc(x.nama)}: ${rupiah(x.saldo)}`).join('<br>');
+        return `Total saldomu <b>${rupiah(f.saldo)}</b>.<br>${w}`;
+    }
+    if (ada('habis', 'kapan', 'runway', 'cukup', 'aman')) {
+        if (f.burn <= 0) return 'Belum ada pengeluaran yang tercatat, jadi tanggal saldo habis belum bisa diprediksi.';
+        let s = `Dengan pengeluaran rata-rata <b>${rupiah(f.burn)}/hari</b>, saldomu diperkirakan habis <b>${tgl(f.habis)}</b> (${f.runway} hari lagi).`;
+        if (f.next) s += ` Pemasukan berikutnya ${tgl(f.next.tanggal_perkiraan)}, jadi statusmu <b>${f.status.toUpperCase()}</b>.`;
+        if (f.status !== 'aman' && f.batasAman) s += ` Supaya aman, batasi pengeluaran maksimal <b>${rupiah(f.batasAman)}/hari</b>.`;
+        return s;
+    }
+    if (ada('hemat', 'tips', 'saran', 'boros', 'kategori', 'paling banyak')) {
+        const r = reportData(uid, thisMonth());
+        if (!r.perKategori.length) return 'Belum ada pengeluaran bulan ini. Mulai catat dulu, nanti aku kasih saran berdasarkan datamu.';
+        const top = r.perKategori[0], pct = Math.round(top.total / r.keluar * 100);
+        const tips = {
+            'Makan & Minum': 'Coba bawa bekal 2–3 kali seminggu atau batasi jajan kopi.',
+            'Transportasi': 'Gabungkan perjalanan atau pakai transportasi umum untuk rute rutin.',
+            'Hiburan': 'Tentukan jatah hiburan per minggu dan catat setiap kali dipakai.',
+            'Kos / Sewa': 'Ini biaya tetap, jadi fokuskan penghematan di kategori lain.'
+        }[top.kategori] || 'Coba tetapkan batas khusus untuk kategori ini setiap minggu.';
+        return `Bulan ini pengeluaran terbesarmu di <b>${esc(top.kategori)}</b>: ${rupiah(top.total)} (${pct}% dari total). ${tips}`;
+    }
+    if (ada('burn', 'rata-rata', 'per hari', 'harian')) {
+        return `Burn rate-mu <b>${rupiah(f.burn)}/hari</b>, dihitung dari total pengeluaran ${f.hari} hari terakhir dibagi ${f.hari}. Transfer antar wallet tidak ikut dihitung.`;
+    }
+    if (ada('utang', 'piutang', 'pinjam', 'nagih', 'patungan')) {
+        const b = DB.debts.filter(d => d.user_id === uid && d.status === 'belum');
+        const pi = b.filter(d => d.arah === 'piutang'), ut = b.filter(d => d.arah === 'utang');
+        if (!b.length) return 'Tidak ada utang atau piutang yang belum lunas. Mantap!';
+        return `Piutang (teman ke kamu): <b>${rupiah(pi.reduce((s, d) => s + d.nominal, 0))}</b> dari ${pi.length} orang.<br>Utang (kamu ke teman): <b>${rupiah(ut.reduce((s, d) => s + d.nominal, 0))}</b> ke ${ut.length} orang.<br>Kirim pengingat lewat menu <a href="utang.html" class="underline font-bold">Utang & Patungan</a>.`;
+    }
+    if (ada('badge', 'level', 'poin', 'streak', 'pencapaian')) {
+        const g = gamify(user);
+        return `Kamu di <b>Level ${g.level} · ${g.levelNama}</b> (${g.poin} poin), streak <b>${g.streak} hari</b>, dan sudah dapat ${g.badges.filter(b => b.dapat).length} dari ${g.badges.length} badge. Lihat detail di <a href="pencapaian.html" class="underline font-bold">Pencapaian</a>.`;
+    }
+    if (ada('transfer', 'wallet', 'dompet', 'gopay', 'bca', 'e-wallet')) {
+        return 'Untuk isi e-wallet dari rekening, catat sebagai <b>Transfer</b> di menu Transaksi. Cukup sekali catat, dan tidak dihitung sebagai pengeluaran sehingga burn rate tetap akurat.';
+    }
+    if (ada('catat', 'tambah', 'input', 'cara')) {
+        return 'Buka menu <a href="transaksi.html#form" class="underline font-bold">Transaksi</a>, pilih jenis, isi nominal, kategori, dan tanggal, lalu Simpan. Wallet boleh dikosongkan, otomatis masuk ke "Utama".';
+    }
+    if (ada('halo', 'hai', 'hi', 'pagi', 'siang', 'malam')) return `Halo ${esc(user.nama.split(' ')[0])}! Mau cek saldo, kapan uang habis, atau minta tips hemat?`;
+    return 'Maaf, aku belum paham pertanyaan itu. Coba tanya soal <b>saldo</b>, <b>kapan uang habis</b>, <b>tips hemat</b>, <b>utang</b>, atau <b>pencapaian</b>.';
+}
+
+function initChatbot(user) {
+    if (user.role !== 'mahasiswa' || $('#fcBot')) return;
+    const logo = `<span class="w-9 h-9 bg-hsOrange rounded-2xl flex items-center justify-center shadow-md shrink-0">
+        <span class="flex gap-1.5"><span class="w-1.5 h-2.5 bg-hsDark rounded-full hs-eye"></span><span class="w-1.5 h-2.5 bg-hsDark rounded-full hs-eye"></span></span></span>`;
+    const wrap = document.createElement('div');
+    wrap.id = 'fcBot';
+    wrap.innerHTML = `
+      <button id="fcBotBtn" aria-label="Buka ForeCash Assistant" title="ForeCash Assistant (bisa digeser)"
+        class="fixed z-[90] w-16 h-16 rounded-full bg-white border-4 border-hsOrange shadow-xl flex items-center justify-center cursor-grab touch-none select-none">
+        <span class="w-11 h-11 bg-hsOrange rounded-2xl flex items-center justify-center">
+          <span class="flex gap-2"><span class="w-2 h-3 bg-hsDark rounded-full hs-eye"></span><span class="w-2 h-3 bg-hsDark rounded-full hs-eye"></span></span>
+        </span>
+      </button>
+      <div id="fcBotPanel" class="hidden fixed z-[91] w-[22rem] max-w-[calc(100vw-1.5rem)] hs-card flex flex-col overflow-hidden" style="height:28rem">
+        <div class="flex items-center gap-3 px-4 py-3 bg-hsYellow">
+          ${logo}
+          <div class="flex-1"><p class="font-black text-sm">ForeCash Assistant</p><p class="text-[10px] font-bold text-hsDark/70">Menjawab dari data keuanganmu</p></div>
+          <button id="fcBotClose" class="w-8 h-8 rounded-full bg-white/70 font-bold" aria-label="Tutup">×</button>
+        </div>
+        <div id="fcBotMsgs" class="flex-1 overflow-y-auto p-3 space-y-2 text-xs"></div>
+        <div id="fcBotChips" class="flex flex-wrap gap-1.5 px-3 pb-2"></div>
+        <form id="fcBotForm" class="flex gap-2 p-3 border-t">
+          <input id="fcBotInput" autocomplete="off" placeholder="Tanya sesuatu..." aria-label="Pertanyaan" class="flex-1 px-3 py-2 text-xs border">
+          <button class="hs-btn bg-hsOrange text-white px-4 text-xs">Kirim</button>
+        </form>
+      </div>`;
+    document.body.appendChild(wrap);
+
+    const btn = $('#fcBotBtn'), panel = $('#fcBotPanel'), msgs = $('#fcBotMsgs');
+    const POS_KEY = 'forecash_bot_pos';
+    let pos = { x: window.innerWidth - 88, y: window.innerHeight - 96 };
+    try { pos = JSON.parse(localStorage.getItem(POS_KEY)) || pos; } catch (e) { /* abaikan */ }
+
+    function clamp() {
+        pos.x = Math.min(Math.max(8, pos.x), window.innerWidth - 72);
+        pos.y = Math.min(Math.max(8, pos.y), window.innerHeight - 72);
+        btn.style.left = pos.x + 'px'; btn.style.top = pos.y + 'px';
+        // panel dibuka di sisi yang masih muat di layar
+        const pw = panel.offsetWidth || 352, ph = panel.offsetHeight || 448;
+        panel.style.left = Math.min(Math.max(12, pos.x + 64 - pw), window.innerWidth - pw - 12) + 'px';
+        panel.style.top = (pos.y - ph - 12 > 12 ? pos.y - ph - 12 : Math.min(pos.y + 76, window.innerHeight - ph - 12)) + 'px';
+    }
+    clamp();
+    window.addEventListener('resize', clamp);
+
+    // geser dengan mouse / jari; klik tanpa geser = buka/tutup
+    let drag = null;
+    btn.addEventListener('pointerdown', e => { drag = { sx: e.clientX, sy: e.clientY, ox: pos.x, oy: pos.y, moved: false }; btn.setPointerCapture(e.pointerId); btn.style.cursor = 'grabbing'; });
+    btn.addEventListener('pointermove', e => {
+        if (!drag) return;
+        const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+        if (Math.abs(dx) + Math.abs(dy) > 5) drag.moved = true;
+        if (drag.moved) { pos.x = drag.ox + dx; pos.y = drag.oy + dy; clamp(); }
+    });
+    btn.addEventListener('pointerup', () => {
+        if (!drag) return;
+        btn.style.cursor = 'grab';
+        if (drag.moved) { try { localStorage.setItem(POS_KEY, JSON.stringify(pos)); } catch (e) { /* abaikan */ } }
+        else toggle();
+        drag = null;
+    });
+
+    function bubble(html, dariUser) {
+        msgs.insertAdjacentHTML('beforeend', dariUser
+            ? `<div class="flex justify-end"><div class="bg-hsOrange text-white rounded-2xl rounded-br-md px-3 py-2 max-w-[80%]">${esc(html)}</div></div>`
+            : `<div class="flex gap-2 items-end">${logo.replace('w-9 h-9', 'w-7 h-7')}<div class="bg-slate-100 rounded-2xl rounded-bl-md px-3 py-2 max-w-[80%] leading-relaxed">${html}</div></div>`);
+        msgs.scrollTop = msgs.scrollHeight;
+    }
+    function tanya(teks) {
+        if (!teks.trim()) return;
+        bubble(teks, true);
+        setTimeout(() => bubble(jawabBot(currentUser() || user, teks)), 350);
+    }
+    function toggle() {
+        panel.classList.toggle('hidden');
+        clamp();
+        if (!panel.classList.contains('hidden')) {
+            if (!msgs.children.length) bubble(`Halo ${esc(user.nama.split(' ')[0])}! Aku ForeCash Assistant. Mau tanya apa soal keuanganmu?`);
+            $('#fcBotInput').focus();
+        }
+    }
+    $('#fcBotClose').onclick = toggle;
+    $('#fcBotChips').innerHTML = ['Kapan uangku habis?', 'Tips hemat', 'Cek saldo', 'Utang & piutang', 'Level aku'].map(c =>
+        `<button type="button" class="bg-slate-100 hover:bg-hsYellow rounded-full px-2.5 py-1 text-[11px] font-bold">${c}</button>`).join('');
+    $$('#fcBotChips button').forEach(b => b.onclick = () => tanya(b.textContent));
+    $('#fcBotForm').onsubmit = e => { e.preventDefault(); const i = $('#fcBotInput'); tanya(i.value); i.value = ''; };
+}
+
 /* ---------------- jalankan halaman sesuai <body data-page="..."> ---------------- */
 document.addEventListener('DOMContentLoaded', () => {
     const page = document.body.dataset.page;
@@ -858,4 +1194,5 @@ document.addEventListener('DOMContentLoaded', () => {
     const active = page === 'wallet' ? 'dashboard' : page;
     renderLayout(user, active);
     pages[page](user);
+    initChatbot(user);
 });

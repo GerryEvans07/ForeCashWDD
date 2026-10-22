@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pencapaian — ForeCash</title>
+    <meta name="description" content="ForeCash: aplikasi web peringatan dini keuangan untuk mahasiswa.">
+    <!-- Tailwind CSS + warna kustom -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="tw-config.js"></script>
+    <!-- Font, ikon, dan grafik -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="pencapaian" class="min-h-screen flex flex-col">
+<div id="mainDashboard" class="min-h-screen flex flex-col">
+    <div id="appHeader"></div>
+
+    <main class="max-w-6xl mx-auto w-full px-4 sm:px-8 py-6 flex-grow space-y-6">
+
+        <div>
+            <h3 class="text-xl font-black">Pencapaian</h3>
+            <p class="text-xs text-slate-500">Kumpulkan badge dari kebiasaan baik: rajin mencatat, hemat, dan melunasi utang.</p>
+        </div>
+
+        <section id="profilGame" class="hs-card p-6 flex flex-wrap items-center gap-6"></section>
+
+        <section class="hs-card p-6 space-y-2">
+            <h4 class="text-sm font-black"><i class="fa-solid fa-flag-checkered text-hsOrange"></i> Tantangan Minggu Ini</h4>
+            <div id="tantangan"></div>
+        </section>
+
+        <section class="space-y-3">
+            <h4 class="text-sm font-black">Badge</h4>
+            <div id="badgeGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+        </section>
+
+        <section class="hs-card p-5 text-xs text-slate-600 space-y-1">
+            <p class="font-bold text-hsDark">Cara mendapat poin</p>
+            <p>Setiap badge bernilai 100 poin, dan setiap hari streak bernilai 10 poin (maks. 30 hari). Level naik setiap 200 poin.</p>
+        </section>
+    </main>
+
+    <div id="appFooter"></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
