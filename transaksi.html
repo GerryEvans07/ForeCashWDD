@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaksi — ForeCash</title>
+    <meta name="description" content="ForeCash: aplikasi web peringatan dini keuangan untuk mahasiswa.">
+    <!-- Tailwind CSS + warna kustom -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="tw-config.js"></script>
+    <!-- Font, ikon, dan grafik -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="transaksi" class="min-h-screen flex flex-col">
+<div id="mainDashboard" class="min-h-screen flex flex-col">
+    <div id="appHeader"></div>
+
+    <main class="max-w-6xl mx-auto w-full px-4 sm:px-8 py-6 flex-grow space-y-6">
+
+        <div>
+            <h3 class="text-xl font-black">Transaksi & Anggaran</h3>
+            <p class="text-xs text-slate-500">Catat pemasukan, pengeluaran, dan transfer antar wallet.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Form tambah / ubah transaksi -->
+                <form id="txForm" class="hs-card p-5 space-y-3">
+                    <h4 id="txFormTitle" class="text-sm font-black">Catat Transaksi</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div><label for="jenis" class="text-xs font-bold">Jenis</label>
+                            <select id="jenis" name="jenis" class="w-full px-3 py-2.5 text-sm border">
+                                <option value="pengeluaran">Pengeluaran</option>
+                                <option value="pemasukan">Pemasukan</option>
+                                <option value="transfer">Transfer antar wallet</option>
+                            </select></div>
+                        <div><label for="nominal" class="text-xs font-bold">Nominal (Rp)</label>
+                            <input id="nominal" name="nominal" type="number" min="1" required placeholder="25000" class="w-full px-3 py-2.5 text-sm border"></div>
+                    </div>
+                    <div><label for="keterangan" class="text-xs font-bold">Keterangan</label>
+                        <input id="keterangan" name="keterangan" maxlength="150" placeholder="Contoh: Makan siang kantin" class="w-full px-3 py-2.5 text-sm border"></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div id="boxKategori"><label for="category_id" class="text-xs font-bold">Kategori</label>
+                            <select id="category_id" name="category_id" class="w-full px-3 py-2.5 text-sm border"></select></div>
+                        <div><label for="tanggal" class="text-xs font-bold">Tanggal</label>
+                            <input id="tanggal" name="tanggal" type="date" required class="w-full px-3 py-2.5 text-sm border"></div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div><label for="wallet_id" class="text-xs font-bold"><span id="lblWallet">Wallet</span> <span class="font-normal text-slate-400">(opsional)</span></label>
+                            <select id="wallet_id" name="wallet_id" class="w-full px-3 py-2.5 text-sm border"></select></div>
+                        <div id="boxTujuan" class="hidden"><label for="wallet_tujuan_id" class="text-xs font-bold">Ke wallet</label>
+                            <select id="wallet_tujuan_id" name="wallet_tujuan_id" class="w-full px-3 py-2.5 text-sm border"></select>
+                            <p class="text-[10px] text-slate-500 mt-1">Transfer tidak dihitung sebagai pemasukan/pengeluaran.</p></div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" id="btnBatalEdit" class="hs-btn bg-slate-200 px-4 py-3 text-sm hidden">Batal</button>
+                        <button id="btnSimpanTx" class="hs-btn bg-hsOrange text-white flex-1 py-3 text-sm">Simpan Transaksi</button>
+                    </div>
+                </form>
+
+                <!-- Riwayat -->
+                <section class="hs-card p-5 space-y-3">
+                    <div class="flex flex-wrap justify-between items-center gap-2">
+                        <h4 class="text-sm font-black">Riwayat Transaksi</h4>
+                        <input id="filterBulan" type="month" aria-label="Pilih bulan" class="px-3 py-1.5 text-xs border">
+                    </div>
+                    <div id="txList"></div>
+                </section>
+            </div>
+
+            <div class="space-y-6">
+                <form id="formBatas" class="hs-card p-5 space-y-2">
+                    <h4 class="text-sm font-black">Batas Pengeluaran Harian</h4>
+                    <input id="batasHarian" type="number" min="0" aria-label="Batas pengeluaran harian" class="w-full px-3 py-2 text-xs border">
+                    <button class="hs-btn bg-slate-800 text-white w-full py-2 text-xs">Simpan</button>
+                    <p id="batasStatus" class="text-[11px] font-bold"></p>
+                </form>
+
+                <section class="hs-card p-5 space-y-3">
+                    <h4 class="text-sm font-black"><i class="fa-solid fa-tags text-hsOrange"></i> Kategori Saya</h4>
+                    <form id="formKategori" class="space-y-2">
+                        <input id="namaKategori" placeholder="Mis. Print/Fotokopi" aria-label="Nama kategori" class="w-full px-3 py-2 text-xs border">
+                        <div class="flex gap-2">
+                            <select id="jenisKategori" aria-label="Jenis kategori" class="w-full px-3 py-2 text-xs border"><option value="pengeluaran">Pengeluaran</option><option value="pemasukan">Pemasukan</option></select>
+                            <button class="hs-btn bg-hsOrange text-white px-3 py-2 text-xs">Tambah</button>
+                        </div>
+                    </form>
+                    <div id="kategoriChips" class="flex flex-wrap gap-1.5"></div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <div id="appFooter"></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan — ForeCash</title>
+    <meta name="description" content="ForeCash: aplikasi web peringatan dini keuangan untuk mahasiswa.">
+    <!-- Tailwind CSS + warna kustom -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="tw-config.js"></script>
+    <!-- Font, ikon, dan grafik -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="laporan" class="min-h-screen flex flex-col">
+<div id="mainDashboard" class="min-h-screen flex flex-col">
+    <div id="appHeader"></div>
+
+    <main class="max-w-6xl mx-auto w-full px-4 sm:px-8 py-6 flex-grow space-y-6">
+
+        <div class="flex flex-wrap justify-between items-center gap-3">
+            <div>
+                <h3 class="text-xl font-black">Laporan Bulanan</h3>
+                <p class="text-xs text-slate-500">Transfer antar wallet tidak dihitung sebagai pemasukan maupun pengeluaran.</p>
+            </div>
+            <div class="flex gap-2">
+                <input id="filterBulan" type="month" aria-label="Pilih bulan" class="px-3 py-2 text-xs border">
+                <button id="btnExport" class="hs-btn bg-hsGreen text-white px-4 py-2 text-xs"><i class="fa-solid fa-file-excel"></i> Ekspor Excel (.csv)</button>
+            </div>
+        </div>
+        <section id="report"></section>
+    </main>
+
+    <div id="appFooter"></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

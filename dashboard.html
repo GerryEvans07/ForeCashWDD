@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — ForeCash</title>
+    <meta name="description" content="ForeCash: aplikasi web peringatan dini keuangan untuk mahasiswa.">
+    <!-- Tailwind CSS + warna kustom -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="tw-config.js"></script>
+    <!-- Font, ikon, dan grafik -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="dashboard" class="min-h-screen flex flex-col">
+<div id="mainDashboard" class="min-h-screen flex flex-col">
+    <div id="appHeader"></div>
+
+    <main class="max-w-6xl mx-auto w-full px-4 sm:px-8 py-6 flex-grow space-y-6">
+
+        <!-- Banner peringatan dini (diisi app.js) -->
+        <section id="warning"></section>
+
+        <!-- Ringkasan -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="hs-card p-5"><p class="text-xs font-bold text-slate-500">Total Saldo</p><p id="statSaldo" class="text-xl font-black">-</p></div>
+            <div class="hs-card p-5"><p class="text-xs font-bold text-slate-500">Burn Rate / Hari</p><p id="statBurn" class="text-xl font-black">-</p><p id="statBurnInfo" class="text-[10px] text-slate-400"></p></div>
+            <div class="hs-card p-5"><p class="text-xs font-bold text-slate-500">Piutang (teman ke saya)</p><p id="statPiutang" class="text-xl font-black text-hsGreen">-</p></div>
+            <div class="hs-card p-5"><p class="text-xs font-bold text-slate-500">Utang (saya ke teman)</p><p id="statUtang" class="text-xl font-black text-hsRed">-</p></div>
+        </section>
+
+        <!-- Saldo per wallet -->
+        <section class="space-y-3">
+            <div class="flex flex-wrap justify-between items-center gap-3">
+                <div>
+                    <h3 class="text-xl font-black">Saldo per Wallet</h3>
+                    <p class="text-xs text-slate-500">Wallet bersifat opsional. Semua transaksi otomatis masuk ke wallet "Utama".</p>
+                </div>
+                <div class="flex gap-2">
+                    <a href="wallet.html" class="hs-btn bg-slate-800 text-white px-3 py-2 text-xs"><i class="fa-solid fa-wallet"></i> Kelola Wallet</a>
+                    <a href="transaksi.html#form" class="hs-btn bg-hsBlue text-white px-4 py-2 text-xs"><i class="fa-solid fa-plus"></i> Tambah Transaksi</a>
+                </div>
+            </div>
+            <div id="walletCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+        </section>
+
+        <!-- Transaksi terakhir -->
+        <section class="hs-card p-5 space-y-3">
+            <div class="flex justify-between items-center">
+                <h4 class="text-sm font-black">Transaksi Terakhir</h4>
+                <a href="transaksi.html" class="text-xs font-bold text-hsOrange">Lihat semua →</a>
+            </div>
+            <div id="recentList"></div>
+        </section>
+    </main>
+
+    <div id="appFooter"></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akun — ForeCash</title>
+    <meta name="description" content="ForeCash: aplikasi web peringatan dini keuangan untuk mahasiswa.">
+    <!-- Tailwind CSS + warna kustom -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="tw-config.js"></script>
+    <!-- Font, ikon, dan grafik -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="akun" class="min-h-screen flex flex-col">
+<div id="mainDashboard" class="min-h-screen flex flex-col">
+    <div id="appHeader"></div>
+
+    <main class="max-w-6xl mx-auto w-full px-4 sm:px-8 py-6 flex-grow space-y-6">
+
+        <div>
+            <h3 class="text-xl font-black">Akun</h3>
+            <p class="text-xs text-slate-500">Kelola profil, kata sandi, dan akses orang tua.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="space-y-6">
+                <form id="formProfil" class="hs-card p-6 space-y-3">
+                    <h4 class="text-sm font-black border-b pb-2">Profil</h4>
+                    <div><label for="pNama" class="text-xs font-bold">Nama</label><input id="pNama" required class="w-full px-3 py-2 text-xs border"></div>
+                    <div><label for="pEmail" class="text-xs font-bold">Email</label><input id="pEmail" type="email" required class="w-full px-3 py-2 text-xs border"></div>
+                    <p class="text-[11px] text-slate-500">Role: <b id="pRole"></b></p>
+                    <button class="hs-btn bg-hsBlue text-white w-full py-2 text-xs">Simpan Profil</button>
+                </form>
+                <form id="formPassword" class="hs-card p-6 space-y-3">
+                    <h4 class="text-sm font-black border-b pb-2">Ganti Kata Sandi</h4>
+                    <input id="pwLama" type="password" required placeholder="Kata sandi lama" aria-label="Kata sandi lama" class="w-full px-3 py-2 text-xs border">
+                    <input id="pwBaru" type="password" required minlength="8" placeholder="Kata sandi baru (min. 8)" aria-label="Kata sandi baru" class="w-full px-3 py-2 text-xs border">
+                    <button class="hs-btn bg-slate-800 text-white w-full py-2 text-xs">Ganti</button>
+                </form>
+                <button onclick="logout()" class="hs-btn bg-hsRed text-white w-full py-2.5 text-xs">Keluar Akun</button>
+            </div>
+
+            <div class="lg:col-span-2 space-y-6">
+                <section id="boxHubung" class="hs-card p-6 space-y-3">
+                    <h4 class="text-sm font-black border-b pb-2"><i class="fa-solid fa-link text-hsPurple"></i> Hubungkan dengan Orang Tua</h4>
+                    <p class="text-xs text-slate-600">Bagikan kode ini ke orang tua. Setelah memasukkan kode di akunnya, orang tua dapat melihat ringkasan keuanganmu tanpa bisa mengubah data.</p>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span id="kodeHubung" class="text-2xl font-black tracking-[.3em] bg-purple-50 text-hsPurple px-4 py-2 rounded-2xl"></span>
+                        <button id="btnKodeBaru" class="hs-btn bg-slate-200 px-3 py-2 text-xs">Buat kode baru</button>
+                    </div>
+                    <div id="ortuList" class="space-y-2"></div>
+                </section>
+
+                <section class="hs-card p-6 space-y-3 text-xs">
+                    <h4 class="text-sm font-black border-b pb-2">Bantuan & FAQ</h4>
+                    <details class="p-3 bg-slate-50 rounded-2xl" open><summary class="font-bold cursor-pointer">Bagaimana ForeCash menghitung tanggal saldo habis?</summary>
+                        <p class="text-slate-600 mt-1">Total saldo dibagi burn rate, yaitu rata-rata pengeluaran harian dalam 14 hari terakhir. Hasilnya dibandingkan dengan jadwal pemasukan berikutnya.</p></details>
+                    <details class="p-3 bg-slate-50 rounded-2xl"><summary class="font-bold cursor-pointer">Apakah wallet wajib diisi?</summary>
+                        <p class="text-slate-600 mt-1">Tidak. Semua transaksi otomatis masuk ke wallet "Utama". Tambah wallet lain hanya jika ingin memisahkan tunai, bank, dan e-wallet.</p></details>
+                    <details class="p-3 bg-slate-50 rounded-2xl"><summary class="font-bold cursor-pointer">Kenapa isi e-wallet dari rekening tidak dicatat sebagai pengeluaran?</summary>
+                        <p class="text-slate-600 mt-1">Gunakan jenis "Transfer". Uang hanya berpindah tempat, jadi tidak mengubah total saldo maupun burn rate.</p></details>
+                    <details class="p-3 bg-slate-50 rounded-2xl"><summary class="font-bold cursor-pointer">Apa yang bisa dilihat orang tua?</summary>
+                        <p class="text-slate-600 mt-1">Status peringatan, total saldo, burn rate, transaksi terakhir, dan laporan bulanan. Orang tua tidak dapat menambah atau mengubah data.</p></details>
+                    <details class="p-3 bg-slate-50 rounded-2xl"><summary class="font-bold cursor-pointer">Apakah ForeCash terhubung ke rekening bank atau e-wallet?</summary>
+                        <p class="text-slate-600 mt-1">Tidak. Semua transaksi dicatat manual sehingga data rekening tetap aman.</p></details>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <div id="appFooter"></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

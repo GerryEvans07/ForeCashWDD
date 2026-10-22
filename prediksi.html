@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediksi & Notifikasi — ForeCash</title>
+    <meta name="description" content="ForeCash: aplikasi web peringatan dini keuangan untuk mahasiswa.">
+    <!-- Tailwind CSS + warna kustom -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="tw-config.js"></script>
+    <!-- Font, ikon, dan grafik -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="prediksi" class="min-h-screen flex flex-col">
+<div id="mainDashboard" class="min-h-screen flex flex-col">
+    <div id="appHeader"></div>
+
+    <main class="max-w-6xl mx-auto w-full px-4 sm:px-8 py-6 flex-grow space-y-6">
+
+        <div>
+            <h3 class="text-xl font-black">Prediksi & Notifikasi</h3>
+            <p id="infoRumus" class="text-xs text-slate-500"></p>
+        </div>
+
+        <section id="warning"></section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <section class="hs-card p-6 space-y-4">
+                <h4 class="text-sm font-black border-b pb-2">Hasil Perhitungan</h4>
+                <div class="text-sm space-y-2">
+                    <p class="flex justify-between"><span class="text-slate-500">Total saldo</span><b id="hSaldo"></b></p>
+                    <p class="flex justify-between"><span class="text-slate-500">Burn rate</span><b id="hBurn"></b></p>
+                    <p class="flex justify-between"><span class="text-slate-500">Runway</span><b id="hRunway"></b></p>
+                    <p class="flex justify-between"><span class="text-slate-500">Perkiraan saldo habis</span><b id="hHabis"></b></p>
+                    <p class="flex justify-between"><span class="text-slate-500">Pemasukan berikutnya</span><b id="hNext"></b></p>
+                </div>
+                <div class="pt-3 border-t space-y-2">
+                    <label for="simBurn" class="text-xs font-bold">Simulasi: jika pengeluaran per hari menjadi</label>
+                    <input id="simBurn" type="number" min="0" step="1000" class="w-full px-3 py-2 text-xs border">
+                    <p id="simHasil" class="text-xs font-bold text-hsBlue"></p>
+                </div>
+            </section>
+            <section class="lg:col-span-2 hs-card p-6 space-y-3">
+                <h4 class="text-sm font-black">Proyeksi Saldo 30 Hari ke Depan</h4>
+                <div class="h-64 relative"><canvas id="chartProyeksi"></canvas></div>
+                <p id="markInfo" class="text-[11px] text-slate-500">Garis kuning menandai tanggal pemasukan berikutnya.</p>
+            </section>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <section class="lg:col-span-2 hs-card p-6 space-y-3">
+                <h4 class="text-sm font-black">Jadwal Pemasukan</h4>
+                <div id="jadwalList"></div>
+            </section>
+            <form id="formJadwal" class="hs-card p-6 space-y-3">
+                <h4 class="text-sm font-black">Tambah Jadwal Pemasukan</h4>
+                <div><label for="jSumber" class="text-xs font-bold">Sumber</label><input id="jSumber" required placeholder="Uang saku dari orang tua" class="w-full px-3 py-2 text-xs border"></div>
+                <div><label for="jNominal" class="text-xs font-bold">Perkiraan nominal (Rp)</label><input id="jNominal" type="number" min="1" required class="w-full px-3 py-2 text-xs border"></div>
+                <div><label for="jTanggal" class="text-xs font-bold">Tanggal perkiraan</label><input id="jTanggal" type="date" required class="w-full px-3 py-2 text-xs border"></div>
+                <button class="hs-btn bg-hsOrange text-white w-full py-2.5 text-xs">Simpan Jadwal</button>
+            </form>
+        </div>
+    </main>
+
+    <div id="appFooter"></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

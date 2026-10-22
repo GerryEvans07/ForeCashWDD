@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Wallet — ForeCash</title>
+    <meta name="description" content="ForeCash: aplikasi web peringatan dini keuangan untuk mahasiswa.">
+    <!-- Tailwind CSS + warna kustom -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="tw-config.js"></script>
+    <!-- Font, ikon, dan grafik -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="wallet" class="min-h-screen flex flex-col">
+<div id="mainDashboard" class="min-h-screen flex flex-col">
+    <div id="appHeader"></div>
+
+    <main class="max-w-6xl mx-auto w-full px-4 sm:px-8 py-6 flex-grow space-y-6">
+
+        <div>
+            <p class="text-xs text-slate-500"><a href="dashboard.html" class="font-bold">Dashboard</a> › Kelola Wallet</p>
+            <h3 class="text-xl font-black">Kelola Wallet</h3>
+            <p class="text-xs text-slate-500">Pisahkan saldo tunai, bank, dan e-wallet. Pindah saldo antar wallet dicatat lewat menu Transaksi → Transfer.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <section id="walletList" class="lg:col-span-2 hs-card p-5 space-y-3"></section>
+
+            <form id="formWallet" class="hs-card p-5 space-y-3 h-fit">
+                <h4 class="text-sm font-black">Tambah Wallet</h4>
+                <div><label for="namaBaru" class="text-xs font-bold">Nama</label><input id="namaBaru" required placeholder="BCA, GoPay, Tunai" class="w-full px-3 py-2 text-xs border"></div>
+                <div><label for="tipeBaru" class="text-xs font-bold">Tipe</label><select id="tipeBaru" class="w-full px-3 py-2 text-xs border"></select></div>
+                <div><label for="saldoBaru" class="text-xs font-bold">Saldo awal (Rp)</label><input id="saldoBaru" type="number" min="0" value="0" class="w-full px-3 py-2 text-xs border"></div>
+                <button class="hs-btn bg-hsOrange text-white w-full py-2.5 text-xs">Simpan Wallet</button>
+            </form>
+        </div>
+    </main>
+
+    <div id="appFooter"></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utang & Patungan — ForeCash</title>
+    <meta name="description" content="ForeCash: aplikasi web peringatan dini keuangan untuk mahasiswa.">
+    <!-- Tailwind CSS + warna kustom -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="tw-config.js"></script>
+    <!-- Font, ikon, dan grafik -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="utang" class="min-h-screen flex flex-col">
+<div id="mainDashboard" class="min-h-screen flex flex-col">
+    <div id="appHeader"></div>
+
+    <main class="max-w-6xl mx-auto w-full px-4 sm:px-8 py-6 flex-grow space-y-6">
+
+        <div>
+            <h3 class="text-xl font-black">Utang & Patungan</h3>
+            <p class="text-xs text-slate-500">Catat utang-piutang antarteman dan bagi tagihan bersama.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-4">
+                <div id="debtList" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                <section id="lunasBox" class="hs-card p-5 hidden">
+                    <h4 class="text-sm font-black mb-2">Riwayat Lunas</h4>
+                    <div id="lunasList"></div>
+                </section>
+            </div>
+
+            <div class="space-y-6">
+                <form id="formSplit" class="hs-card p-5 space-y-3">
+                    <h4 class="text-sm font-black"><i class="fa-solid fa-calculator text-hsPurple"></i> Split Bill</h4>
+                    <div><label for="sbJudul" class="text-xs font-bold">Judul</label><input id="sbJudul" placeholder="Makan malam angkatan" class="w-full px-3 py-2 text-xs border"></div>
+                    <div><label for="sbTotal" class="text-xs font-bold">Total tagihan (Rp)</label><input id="sbTotal" type="number" min="1" required class="w-full px-3 py-2 text-xs border"></div>
+                    <div><label for="sbTeman" class="text-xs font-bold">Nama teman (pisahkan dengan koma)</label><input id="sbTeman" required placeholder="Budi, Siti, Bima" class="w-full px-3 py-2 text-xs border"></div>
+                    <label class="flex items-center gap-2 text-xs font-bold"><input id="sbSaya" type="checkbox" checked> Saya ikut menanggung bagian</label>
+                    <p id="sbPreview" class="text-xs font-bold text-hsPurple"></p>
+                    <div><label for="sbTempo" class="text-xs font-bold">Jatuh tempo (opsional)</label><input id="sbTempo" type="date" class="w-full px-3 py-2 text-xs border"></div>
+                    <button class="hs-btn bg-hsPurple text-white w-full py-2.5 text-xs">Bagi & Catat Piutang</button>
+                </form>
+
+                <form id="formDebt" class="hs-card p-5 space-y-3">
+                    <h4 class="text-sm font-black"><i class="fa-solid fa-plus text-hsGreen"></i> Catat Utang / Piutang</h4>
+                    <div><label for="dNama" class="text-xs font-bold">Nama teman</label><input id="dNama" required class="w-full px-3 py-2 text-xs border"></div>
+                    <div><label for="dKet" class="text-xs font-bold">Keterangan</label><input id="dKet" required placeholder="Pinjam untuk ongkos" class="w-full px-3 py-2 text-xs border"></div>
+                    <div><label for="dNominal" class="text-xs font-bold">Nominal (Rp)</label><input id="dNominal" type="number" min="1" required class="w-full px-3 py-2 text-xs border"></div>
+                    <div><label for="dArah" class="text-xs font-bold">Posisi</label>
+                        <select id="dArah" class="w-full px-3 py-2 text-xs border"><option value="piutang">Dia utang ke saya (piutang)</option><option value="utang">Saya utang ke dia (utang)</option></select></div>
+                    <div><label for="dTempo" class="text-xs font-bold">Jatuh tempo (opsional)</label><input id="dTempo" type="date" class="w-full px-3 py-2 text-xs border"></div>
+                    <button class="hs-btn bg-hsGreen text-white w-full py-2.5 text-xs">Simpan</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div id="appFooter"></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

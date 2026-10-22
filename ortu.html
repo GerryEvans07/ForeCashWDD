@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantau Anak — ForeCash</title>
+    <meta name="description" content="ForeCash: aplikasi web peringatan dini keuangan untuk mahasiswa.">
+    <!-- Tailwind CSS + warna kustom -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="tw-config.js"></script>
+    <!-- Font, ikon, dan grafik -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="ortu" class="min-h-screen flex flex-col">
+<div id="mainDashboard" class="min-h-screen flex flex-col">
+    <div id="appHeader"></div>
+
+    <main class="max-w-6xl mx-auto w-full px-4 sm:px-8 py-6 flex-grow space-y-6">
+
+        <div class="flex flex-wrap justify-between items-end gap-4">
+            <div>
+                <h3 class="text-xl font-black">Pantau Keuangan Anak</h3>
+                <p class="text-xs text-slate-500">Data hanya dapat dilihat. Perubahan dilakukan oleh mahasiswa sendiri.</p>
+            </div>
+            <div id="anakTabs" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <form id="formHubung" class="hs-card p-5 flex flex-wrap items-end gap-3">
+            <div class="flex-1 min-w-[200px]"><label for="kode" class="text-xs font-bold">Hubungkan akun anak</label>
+                <input id="kode" required maxlength="8" placeholder="Masukkan kode 8 karakter dari akun anak" class="w-full px-3 py-2 text-sm border uppercase"></div>
+            <button class="hs-btn bg-hsPurple text-white px-5 py-2.5 text-xs">Hubungkan</button>
+        </form>
+
+        <p id="kosong" class="hs-card p-6 text-sm text-slate-500 hidden">Belum ada akun anak yang terhubung. Minta anak membuka menu <b>Akun</b> di ForeCash untuk melihat kode hubung.</p>
+
+        <div id="isiAnak" class="space-y-6 hidden">
+            <section id="warning"></section>
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="hs-card p-5"><p class="text-xs font-bold text-slate-500">Total Saldo</p><p id="oSaldo" class="text-xl font-black"></p></div>
+                <div class="hs-card p-5"><p class="text-xs font-bold text-slate-500">Burn Rate / Hari</p><p id="oBurn" class="text-xl font-black"></p></div>
+                <div class="hs-card p-5"><p class="text-xs font-bold text-slate-500">Pemasukan Bulan Ini</p><p id="oMasuk" class="text-xl font-black text-hsGreen"></p></div>
+                <div class="hs-card p-5"><p class="text-xs font-bold text-slate-500">Pengeluaran Bulan Ini</p><p id="oKeluar" class="text-xl font-black text-hsRed"></p></div>
+            </section>
+            <section id="report"></section>
+            <section class="hs-card p-5 space-y-2">
+                <h4 class="text-sm font-black">Transaksi Terakhir</h4>
+                <div id="recentList"></div>
+            </section>
+        </div>
+    </main>
+
+    <div id="appFooter"></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
