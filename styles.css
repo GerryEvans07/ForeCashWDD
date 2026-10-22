@@ -189,3 +189,8 @@ canvas {
 ::-webkit-scrollbar-track {
     background: transparent;
 }
+/* ikon ForeCash Assistant (logo 3D) */
+.fc-bot-logo { filter: drop-shadow(0 8px 10px rgba(140, 70, 0, .35)); animation: fcBotFloat 3s ease-in-out infinite; transition: transform .3s; }
+#fcBotBtn:hover .fc-bot-logo { transform: scale(1.1) rotate(-6deg); animation-play-state: paused; }
+@keyframes fcBotFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@media (prefers-reduced-motion: reduce) { .fc-bot-logo { animation: none; } }

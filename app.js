@@ -1050,7 +1050,7 @@ function jawabBot(user, teks) {
     const q = teks.toLowerCase(), uid = user.user_id, f = forecast(uid);
     const ada = (...k) => k.some(w => q.includes(w));
 
-    if (ada('saldo', 'uang aku', 'uangku', 'duit')) {
+    if (ada('saldo', 'uang aku', 'uangku', 'duit') && !ada('habis', 'kapan', 'cukup')) {
         const w = walletsWithBalance(uid).map(x => `• ${esc(x.nama)}: ${rupiah(x.saldo)}`).join('<br>');
         return `Total saldomu <b>${rupiah(f.saldo)}</b>.<br>${w}`;
     }
@@ -1098,16 +1098,13 @@ function jawabBot(user, teks) {
 
 function initChatbot(user) {
     if (user.role !== 'mahasiswa' || $('#fcBot')) return;
-    const logo = `<span class="w-9 h-9 bg-hsOrange rounded-2xl flex items-center justify-center shadow-md shrink-0">
-        <span class="flex gap-1.5"><span class="w-1.5 h-2.5 bg-hsDark rounded-full hs-eye"></span><span class="w-1.5 h-2.5 bg-hsDark rounded-full hs-eye"></span></span></span>`;
+    const logo = `<img src="logo.svg" alt="" class="w-9 h-9 shrink-0 drop-shadow">`;
     const wrap = document.createElement('div');
     wrap.id = 'fcBot';
     wrap.innerHTML = `
       <button id="fcBotBtn" aria-label="Buka ForeCash Assistant" title="ForeCash Assistant (bisa digeser)"
-        class="fixed z-[90] w-16 h-16 rounded-full bg-white border-4 border-hsOrange shadow-xl flex items-center justify-center cursor-grab touch-none select-none">
-        <span class="w-11 h-11 bg-hsOrange rounded-2xl flex items-center justify-center">
-          <span class="flex gap-2"><span class="w-2 h-3 bg-hsDark rounded-full hs-eye"></span><span class="w-2 h-3 bg-hsDark rounded-full hs-eye"></span></span>
-        </span>
+        class="fixed z-[90] w-16 h-16 flex items-center justify-center cursor-grab touch-none select-none bg-transparent">
+        <img src="logo.svg" alt="" class="fc-bot-logo w-14 h-14 pointer-events-none" draggable="false">
       </button>
       <div id="fcBotPanel" class="hidden fixed z-[91] w-[22rem] max-w-[calc(100vw-1.5rem)] hs-card flex flex-col overflow-hidden" style="height:28rem">
         <div class="flex items-center gap-3 px-4 py-3 bg-hsYellow">
