@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ForeCash — Mindful Spending, Smarter Planning</title>
+  <meta name="description" content="ForeCash membantu mahasiswa memantau pengeluaran dan memberi peringatan sebelum saldo habis.">
+  <!-- File CSS Eksternal -->
+  <link rel="stylesheet" href="assets/css/landing.css">
+  <link rel="stylesheet" href="assets/css/landing-anim.css">
+  <link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+</head>
+
+<body>
+  <!-- Splash pembuka: klik untuk lewati -->
+  <div class="splash" id="splash" aria-hidden="true">
+    <div class="splash-inner">
+      <img src="assets/img/logo.svg" alt="" class="splash-logo">
+      <div class="splash-shadow"></div>
+      <div class="splash-name" id="splashName">ForeCash</div>
+      <div class="splash-tag">Mindful Spending, Smarter Planning</div>
+    </div>
+    <span class="splash-skip">klik untuk lewati</span>
+  </div>
+  <div class="page">
+
+    <nav>
+      <a href="#" class="logo" aria-label="ForeCash Home">
+        <img src="assets/img/logo.svg" alt="" class="logo-3d">
+        <span>ForeCash</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="#about">Tentang ForeCash</a>
+        <a href="#mindful">Mindful Spending</a>
+      </div>
+
+      <a href="pages/login.html" class="nav-button">Mulai Sekarang</a>
+    </nav>
+
+    <main>
+      <section class="hero" id="start">
+        <div class="hero-copy">
+          <div class="eyebrow">
+            <span class="eyebrow-dot"></span>
+            Financial wellness, made simple
+          </div>
+
+          <h1>
+            Mindful Spending,<br>
+            Smarter Planning.
+          </h1>
+
+          <p>
+            Kelola uang dengan lebih tenang, lebih sadar, dan tanpa
+            membuat keuangan terasa rumit.
+          </p>
+
+          <div class="hero-actions">
+            <a href="pages/login.html" class="primary">MULAI SEKARANG!</a>
+            <a href="#mindful" class="secondary">Pelajari lebih lanjut →</a>
+          </div>
+        </div>
+
+        <div class="illustration" aria-hidden="true">
+          <div class="sun"></div>
+
+          <div class="stem"></div>
+          <div class="leaf"></div>
+
+          <div class="coin">
+            <div class="coin-face"></div>
+            <div class="coin-smile"></div>
+          </div>
+
+          <div class="wallet">
+            <div class="wallet-face"></div>
+            <div class="wallet-smile"></div>
+          </div>
+
+          <div class="blue-card">
+            <div class="card-face"></div>
+            <div class="card-smile"></div>
+          </div>
+
+          <div class="spark one">✦</div>
+          <div class="spark two">✦</div>
+          <div class="spark three">✦</div>
+        </div>
+      </section>
+
+      <section class="intro reveal" id="about">
+        <h2>Keuangan yang terasa lebih ringan.</h2>
+        <p>
+          ForeCash hadir dengan pendekatan yang sederhana dan ramah,
+          supaya merencanakan keuangan terasa seperti kebiasaan baik,
+          bukan pekerjaan yang melelahkan.
+        </p>
+        <span class="mini-note">Pelan-pelan. Konsisten. Lebih sadar.</span>
+      </section>
+
+      <section class="intro reveal" id="mindful">
+        <h2>Spend with intention.</h2>
+        <p>
+          Bukan tentang menghabiskan lebih sedikit. Ini tentang memahami
+          ke mana uangmu pergi dan membuat pilihan yang sesuai dengan tujuanmu.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      © 2026 ForeCash · Mindful Spending, Smarter Planning
+    </footer>
+
+  </div>
+  <script>
+    // ---------- Animasi landing ForeCash ----------
+    (function () {
+      var splash = document.getElementById('splash');
+      var name = document.getElementById('splashName');
+      // pecah nama jadi huruf supaya muncul satu per satu
+      name.innerHTML = name.textContent.split('').map(function (c, i) {
+        return '<span style="animation-delay:' + (1.0 + i * 0.06) + 's">' + c + '</span>';
+      }).join('');
+
+      // splash cukup tampil sekali per kunjungan (tidak muncul lagi saat kembali ke halaman ini)
+      var sudah = false;
+      try { sudah = sessionStorage.getItem('fc_splash') === '1'; } catch (e) {}
+
+      function mulai() {
+        if (splash.classList.contains('done')) return;
+        splash.classList.add('done');
+        document.body.classList.add('anim');
+        try { sessionStorage.setItem('fc_splash', '1'); } catch (e) {}
+        setTimeout(function () { splash.remove(); }, 900);
+      }
+      if (sudah) { splash.remove(); document.body.classList.add('anim'); }
+      else { splash.addEventListener('click', mulai); setTimeout(mulai, 2600); }
+
+      // section muncul saat di-scroll
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('show'); io.unobserve(en.target); } });
+      }, { threshold: 0.2 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+</body>
+</html>

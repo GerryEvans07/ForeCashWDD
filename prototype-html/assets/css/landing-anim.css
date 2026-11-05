@@ -1,0 +1,101 @@
+/* =====================================================================
+   ANIMASI LANDING PAGE ForeCash
+   1) Splash pembuka (logo 3D muncul, berputar, lalu layar terangkat)
+   2) Hero masuk bertahap, ilustrasi melayang
+   3) Section muncul saat di-scroll
+   ===================================================================== */
+
+/* ---------- 1. Splash ---------- */
+.splash {
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; place-items: center;
+  background: radial-gradient(circle at 50% 45%, #fff3c4 0%, #ffd447 55%, #ffb648 100%);
+  cursor: pointer;
+  transition: transform .8s cubic-bezier(.77,0,.18,1), opacity .8s ease;
+}
+.splash.done { transform: translateY(-100%); opacity: .4; pointer-events: none; }
+.splash-inner { display: flex; flex-direction: column; align-items: center; gap: 18px; perspective: 700px; }
+.splash-logo {
+  width: 150px; height: 150px;
+  filter: drop-shadow(0 22px 22px rgba(140, 70, 0, .28));
+  animation: logoIn 1.1s cubic-bezier(.34,1.56,.64,1) both, logoSpin 1.2s .9s ease-in-out both;
+  transform-style: preserve-3d;
+}
+.splash-name {
+  font-size: 40px; font-weight: 900; letter-spacing: -1px; color: var(--ink);
+  display: flex; overflow: hidden;
+}
+.splash-name span { display: inline-block; animation: letterUp .5s cubic-bezier(.34,1.56,.64,1) both; }
+.splash-tag {
+  font-size: 14px; font-weight: 700; color: #6b4a00;
+  animation: fadeUp .6s 1.5s ease both;
+}
+.splash-shadow {
+  width: 110px; height: 14px; border-radius: 50%; background: rgba(120,60,0,.18);
+  margin-top: -10px; animation: shadowIn 1.1s ease both;
+}
+.splash-skip { position: absolute; bottom: 28px; font-size: 12px; font-weight: 600; color: #6b4a00; opacity: .7; }
+
+@keyframes logoIn  { 0% { transform: translateY(-120px) scale(.3) rotate(-25deg); opacity: 0; }
+                     100% { transform: none; opacity: 1; } }
+@keyframes logoSpin { 0% { transform: rotateY(0); } 100% { transform: rotateY(360deg); } }
+@keyframes letterUp { 0% { transform: translateY(110%); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes fadeUp   { 0% { transform: translateY(14px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes shadowIn { 0% { transform: scale(.2); opacity: 0; } 100% { transform: none; opacity: 1; } }
+
+/* ---------- logo navbar pakai logo 3D ---------- */
+.logo-3d {
+  width: 40px; height: 40px;
+  filter: drop-shadow(0 4px 4px rgba(140, 70, 0, .22));
+  transition: transform .5s cubic-bezier(.34,1.56,.64,1);
+}
+.logo:hover .logo-3d { transform: rotateY(360deg) scale(1.08); }
+
+/* ---------- 2. Hero masuk bertahap (aktif setelah splash) ---------- */
+.anim .hero { animation: heroIn .9s cubic-bezier(.22,1,.36,1) both; }
+.anim .hero-copy > * { animation: fadeUp .7s cubic-bezier(.22,1,.36,1) both; }
+.anim .hero-copy > *:nth-child(1) { animation-delay: .25s; }
+.anim .hero-copy > *:nth-child(2) { animation-delay: .38s; }
+.anim .hero-copy > *:nth-child(3) { animation-delay: .52s; }
+.anim .hero-copy > *:nth-child(4) { animation-delay: .66s; }
+.anim nav { animation: fadeDown .7s ease both; }
+@keyframes heroIn  { 0% { transform: translateY(40px) scale(.97); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes fadeDown { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+
+/* ilustrasi: muncul lalu melayang terus */
+.anim .sun   { animation: popIn .9s .3s cubic-bezier(.34,1.56,.64,1) both, breathe 6s 1.2s ease-in-out infinite; }
+.anim .coin  { animation: popIn .8s .55s cubic-bezier(.34,1.56,.64,1) both, coinFloat 4s 1.4s ease-in-out infinite; }
+.anim .leaf  { animation: popIn .6s .8s cubic-bezier(.34,1.56,.64,1) both, sway 3.5s 1.4s ease-in-out infinite; transform-origin: bottom left; }
+.anim .stem  { animation: growUp .5s .7s ease both; transform-origin: bottom; }
+.anim .wallet    { animation: slideL .8s .7s cubic-bezier(.34,1.56,.64,1) both, floatA 5s 1.5s ease-in-out infinite; }
+.anim .blue-card { animation: slideR .8s .8s cubic-bezier(.34,1.56,.64,1) both, floatB 4.5s 1.6s ease-in-out infinite; }
+.anim .spark { animation: twinkle 2.4s ease-in-out infinite; }
+.anim .spark.two { animation-delay: .8s; }
+.anim .spark.three { animation-delay: 1.6s; }
+
+@keyframes popIn   { 0% { transform: scale(0); opacity: 0; } 100% { opacity: 1; } }
+@keyframes breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+@keyframes coinFloat { 0%,100% { transform: translateY(0) rotateY(0); }
+                       50% { transform: translateY(-14px) rotateY(180deg); } }
+@keyframes sway    { 0%,100% { transform: rotate(-22deg); } 50% { transform: rotate(-8deg); } }
+@keyframes growUp  { 0% { transform: rotate(9deg) scaleY(0); } 100% { transform: rotate(9deg) scaleY(1); } }
+@keyframes slideL  { 0% { transform: translateX(-80px) rotate(-30deg); opacity: 0; } 100% { transform: rotate(-8deg); opacity: 1; } }
+@keyframes slideR  { 0% { transform: translateX(80px) rotate(30deg); opacity: 0; } 100% { transform: rotate(7deg); opacity: 1; } }
+@keyframes floatA  { 0%,100% { transform: rotate(-8deg) translateY(0); } 50% { transform: rotate(-4deg) translateY(-12px); } }
+@keyframes floatB  { 0%,100% { transform: rotate(7deg) translateY(0); } 50% { transform: rotate(11deg) translateY(-10px); } }
+@keyframes twinkle { 0%,100% { transform: scale(.7) rotate(0); opacity: .5; } 50% { transform: scale(1.25) rotate(90deg); opacity: 1; } }
+
+/* ---------- 3. Muncul saat di-scroll ---------- */
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity .8s ease, transform .8s cubic-bezier(.22,1,.36,1); }
+.reveal.show { opacity: 1; transform: none; }
+
+/* tombol utama sedikit "bernapas" supaya menarik perhatian */
+.anim .primary { animation: fadeUp .7s .66s both, nudge 2.6s 2.5s ease-in-out infinite; }
+@keyframes nudge { 0%,100% { transform: none; } 50% { transform: translateY(-3px) scale(1.03); } }
+
+/* pengguna yang mematikan animasi di sistem operasinya */
+@media (prefers-reduced-motion: reduce) {
+  .splash { display: none; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+}

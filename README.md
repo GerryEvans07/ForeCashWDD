@@ -4,7 +4,7 @@ Website peringatan dini keuangan mahasiswa. Proyek IS556 Web Design and Developm
 
 ForeCash menghitung rata-rata pengeluaran harian (burn rate), memperkirakan tanggal saldo habis, dan memberi peringatan sebelum pemasukan berikutnya datang. Orang tua dapat memantau ringkasan keuangan anak tanpa bisa mengubah datanya.
 
-Dibangun dengan PHP dan MySQL. Data tersimpan di database, jadi akun dan transaksi bisa dibuka dari perangkat mana pun.
+Tampilan dibuat dengan HTML, CSS (Tailwind), dan JavaScript. PHP dan MySQL dipakai untuk login dan menyimpan data, jadi akun dan transaksi bisa dibuka dari perangkat mana pun. Versi awal yang hanya HTML/CSS/JS disimpan di folder `prototype-html/`.
 
 ## Cara menjalankan (XAMPP)
 
@@ -28,7 +28,7 @@ Akun demo (setelah import `demo_data.sql`):
 
 ```
 ForeCashWDD/
-├─ index.php                 Landing page
+├─ index.html                Landing page (HTML, CSS, animasi)
 ├─ config/
 │  └─ database.php           Koneksi MySQL, zona waktu, session
 ├─ includes/                 Logika yang dipakai banyak halaman
@@ -57,9 +57,10 @@ ForeCashWDD/
 ├─ assets/
 │  ├─ css/                   styles.css, landing.css, landing-anim.css
 │  ├─ img/                   logo.svg
-│  └─ js/                    tw-config.js, app.js, chatbot.js
+│  └─ js/                    tw-config.js, app.js (konfirmasi nominal, pratinjau split bill), chatbot.js (tampilan chatbot)
 ├─ database/                 schema.sql, demo_data.sql
-└─ uploads/struk/            Foto struk (dikunci .htaccess)
+├─ uploads/struk/            Foto struk (dikunci .htaccess)
+└─ prototype-html/           Versi awal HTML/CSS/JS tanpa database
 ```
 
 ## Keamanan

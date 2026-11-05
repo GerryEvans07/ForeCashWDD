@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button class="hs-btn bg-hsOrange text-white w-full py-3.5 text-base"><?= $mode === 'daftar' ? 'Buat Akun' : 'Masuk' ?></button>
             </form>
         </div>
-        <a href="../index.php" class="text-xs font-bold text-slate-500">← Kembali ke beranda</a>
+        <a href="../index.html" class="text-xs font-bold text-slate-500">← Kembali ke beranda</a>
     </div>
 </div>
 </body>
