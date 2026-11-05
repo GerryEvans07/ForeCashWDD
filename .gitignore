@@ -14,3 +14,8 @@ node_modules/
 # rahasia
 .env
 .env.local
+
+# foto struk yang diunggah pengguna (jangan masuk repo)
+uploads/struk/*
+!uploads/struk/.htaccess
+!uploads/struk/.gitkeep
