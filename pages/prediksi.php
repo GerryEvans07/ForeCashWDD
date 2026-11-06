@@ -36,7 +36,6 @@ $title = 'Prediksi & Notifikasi'; $active = 'prediksi';
 require __DIR__ . '/../includes/layout/header.php';
 ?>
 <div>
-    <h3 class="text-xl font-black">Prediksi & Notifikasi</h3>
     <p class="text-xs text-slate-500">Dihitung otomatis dari transaksi: burn rate = total pengeluaran <?= $f['hari'] ?> hari terakhir ÷ <?= $f['hari'] ?>.</p>
 </div>
 

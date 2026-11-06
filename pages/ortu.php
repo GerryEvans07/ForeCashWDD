@@ -36,12 +36,11 @@ if ($anak) {
                     WHERE t.user_id = ? AND t.jenis <> 'transfer' ORDER BY t.tanggal DESC, t.transaction_id DESC LIMIT 8", 'i', $sid);
 }
 
-$title = 'Pantau Anak'; $active = 'ortu';
+$title = 'Pantau Keuangan Anak'; $active = 'ortu';
 require __DIR__ . '/../includes/layout/header.php';
 ?>
 <div class="flex flex-wrap justify-between items-end gap-4">
     <div>
-        <h3 class="text-xl font-black">Pantau Keuangan Anak</h3>
         <p class="text-xs text-slate-500">Data hanya dapat dilihat. Perubahan dilakukan oleh mahasiswa sendiri.</p>
     </div>
     <div class="flex flex-wrap gap-2">

@@ -34,7 +34,6 @@ $labelTipe = ['tunai' => 'Tunai', 'bank' => 'Bank', 'ewallet' => 'E-Wallet'];
 ?>
 <div>
     <p class="text-xs text-slate-500"><a href="dashboard.php" class="font-bold">Dashboard</a> › Kelola Wallet</p>
-    <h3 class="text-xl font-black">Kelola Wallet</h3>
     <p class="text-xs text-slate-500">Pisahkan saldo tunai, bank, dan e-wallet. Pindah saldo antar wallet dicatat lewat menu Transaksi → Transfer.</p>
 </div>
 

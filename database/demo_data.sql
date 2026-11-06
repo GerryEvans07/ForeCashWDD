@@ -24,3 +24,6 @@ INSERT INTO income_schedules (user_id, sumber, nominal, tanggal_perkiraan) VALUE
 INSERT INTO debts (user_id, nama_teman, keterangan, nominal, arah, jatuh_tempo) VALUES
  (1, 'Andi', 'Patungan makan', 28000, 'piutang', DATE_ADD(CURDATE(), INTERVAL 3 DAY)),
  (1, 'Sasa', 'Pinjam ongkos', 20000, 'utang', NULL);
+INSERT INTO user_pets (user_id, pet_id, menetas_pada, dipakai) VALUES
+ (1, 'celeng', DATE_SUB(CURDATE(), INTERVAL 10 DAY), 1),
+ (1, 'mochi', DATE_SUB(CURDATE(), INTERVAL 5 DAY), 0);

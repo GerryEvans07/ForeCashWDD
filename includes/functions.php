@@ -116,6 +116,13 @@ function projection($f, $days = 30) {
     return [$labels, $data];
 }
 
+/* emoji kategori untuk daftar transaksi */
+function kategori_emoji($nama, $jenis = 'pengeluaran') {
+    $map = ['Makan & Minum' => '🍜', 'Transportasi' => '🛵', 'Kos / Sewa' => '🏠', 'Kebutuhan Kuliah' => '📚',
+            'Hiburan' => '🎬', 'Uang Saku' => '💰', 'Kerja Sampingan' => '💼', 'Beasiswa' => '🎓', 'Pelunasan Utang/Piutang' => '🤝'];
+    return $map[$nama] ?? ($jenis === 'pemasukan' ? '💵' : '🧾');
+}
+
 /* ---------- respons JSON (dipakai api/) ---------- */
 function json_out($data, $code = 200) {
     http_response_code($code);
@@ -126,3 +133,4 @@ function json_out($data, $code = 200) {
 
 require_once __DIR__ . '/avatar.php';
 require_once __DIR__ . '/gamify.php';
+require_once __DIR__ . '/pets.php';

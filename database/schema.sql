@@ -89,6 +89,28 @@ CREATE TABLE debts (
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- Teman Hemat: hewan yang menetas dari telur setelah 7 hari baik (fitur Petualangan)
+CREATE TABLE user_pets (
+  id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id      INT NOT NULL,
+  pet_id       VARCHAR(20) NOT NULL,                 -- kunci katalog di includes/pets.php
+  menetas_pada DATE NOT NULL,
+  dipakai      TINYINT(1) NOT NULL DEFAULT 0,        -- 1 = sedang menemani di peta & dashboard
+  UNIQUE KEY uq_pet (user_id, pet_id),
+  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Lupa kata sandi: token reset sekali pakai (yang disimpan hanya hash SHA-256), berlaku 30 menit
+CREATE TABLE password_resets (
+  id         INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id    INT NOT NULL,
+  token_hash CHAR(64) NOT NULL,
+  expires_at DATETIME NOT NULL,
+  used       TINYINT(1) NOT NULL DEFAULT 0,
+  UNIQUE KEY uq_token (token_hash),
+  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 INSERT INTO categories (user_id, nama, jenis) VALUES
  (NULL,'Makan & Minum','pengeluaran'),(NULL,'Transportasi','pengeluaran'),(NULL,'Kos / Sewa','pengeluaran'),
  (NULL,'Kebutuhan Kuliah','pengeluaran'),(NULL,'Hiburan','pengeluaran'),(NULL,'Lainnya','pengeluaran'),

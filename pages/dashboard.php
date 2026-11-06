@@ -17,75 +17,100 @@ $utang   = (float)val("SELECT COALESCE(SUM(nominal),0) FROM debts WHERE user_id 
 $title = 'Dashboard'; $active = 'dashboard';
 require __DIR__ . '/../includes/layout/header.php';
 $ikon = ['tunai' => 'fa-money-bill-wave', 'bank' => 'fa-building-columns', 'ewallet' => 'fa-mobile-screen'];
-$warnaWallet = ['bg-hsYellow', 'bg-blue-100', 'bg-emerald-100', 'bg-purple-100', 'bg-orange-100'];
 ?>
 
 <?php require __DIR__ . '/../includes/layout/warning.php'; ?>
 
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-    <div class="hs-card p-5"><p class="text-xs font-bold text-slate-500">Total Saldo</p><p class="text-xl font-black"><?= rupiah($f['saldo']) ?></p></div>
-    <div class="hs-card p-5"><p class="text-xs font-bold text-slate-500">Burn Rate / Hari</p><p class="text-xl font-black"><?= rupiah($f['burn']) ?></p><p class="text-[10px] text-slate-400">rata-rata <?= $f['hari'] ?> hari terakhir</p></div>
-    <div class="hs-card p-5"><p class="text-xs font-bold text-slate-500">Piutang (teman ke saya)</p><p class="text-xl font-black text-hsGreen"><?= rupiah($piutang) ?></p></div>
-    <div class="hs-card p-5"><p class="text-xs font-bold text-slate-500">Utang (saya ke teman)</p><p class="text-xl font-black text-hsRed"><?= rupiah($utang) ?></p></div>
-</div>
+<!-- Ringkasan angka -->
+<section class="fc-stats" aria-label="Ringkasan">
+    <div class="hs-card fc-stat">
+        <span class="fc-tile fc-tile-orange"><i class="fa-solid fa-coins"></i></span>
+        <div class="min-w-0"><p class="fc-stat-label">Total saldo</p><p class="fc-stat-value"><?= rupiah($f['saldo']) ?></p></div>
+    </div>
+    <div class="hs-card fc-stat">
+        <span class="fc-tile fc-tile-red"><i class="fa-solid fa-fire-flame-curved"></i></span>
+        <div class="min-w-0"><p class="fc-stat-label">Pengeluaran per hari</p><p class="fc-stat-value"><?= rupiah($f['burn']) ?></p>
+            <p class="fc-stat-sub">rata-rata <?= $f['hari'] ?> hari terakhir</p></div>
+    </div>
+    <a href="utang.php" class="hs-card fc-stat">
+        <span class="fc-tile fc-tile-green"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+        <div class="min-w-0"><p class="fc-stat-label">Teman utang ke kamu</p><p class="fc-stat-value text-hsGreen"><?= rupiah($piutang) ?></p></div>
+    </a>
+    <a href="utang.php" class="hs-card fc-stat">
+        <span class="fc-tile fc-tile-purple"><i class="fa-solid fa-user-clock"></i></span>
+        <div class="min-w-0"><p class="fc-stat-label">Kamu utang ke teman</p><p class="fc-stat-value text-hsRed"><?= rupiah($utang) ?></p></div>
+    </a>
+</section>
+
+<!-- Aksi cepat -->
+<section aria-label="Catat cepat">
+    <div class="fc-section-title"><h3>Mau catat apa?</h3></div>
+    <div class="fc-actions">
+        <a href="transaksi.php?jenis=pengeluaran#form" class="fc-action fc-action-out"><span class="fc-action-emoji">🍜</span><span><b>Pengeluaran</b><small>Jajan, ongkos, kos</small></span></a>
+        <a href="transaksi.php?jenis=pemasukan#form" class="fc-action fc-action-in"><span class="fc-action-emoji">💰</span><span><b>Pemasukan</b><small>Uang saku, gaji part-time</small></span></a>
+        <a href="transaksi.php?jenis=transfer#form" class="fc-action fc-action-move"><span class="fc-action-emoji">🔁</span><span><b>Transfer</b><small>Isi e-wallet dari rekening</small></span></a>
+        <a href="utang.php#split" class="fc-action fc-action-split"><span class="fc-action-emoji">🍕</span><span><b>Split bill</b><small>Bagi tagihan bareng teman</small></span></a>
+    </div>
+</section>
 
 <!-- Gamifikasi: streak, level & badge, tantangan mingguan -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div class="hs-card p-5 flex items-center gap-4">
-        <div class="text-4xl">🔥</div>
-        <div><p class="text-2xl font-black"><?= $g['streak'] ?> hari</p>
-             <p class="text-xs text-slate-500"><?= $g['streak'] ? 'berturut-turut mencatat' : 'Mulai streak dengan mencatat hari ini' ?></p></div>
+<section class="fc-game" aria-label="Pencapaian">
+    <div class="hs-card fc-streak">
+        <span class="fc-streak-flame">🔥</span>
+        <div><p class="fc-stat-value" style="font-size:30px"><?= $g['streak'] ?> hari</p>
+             <p class="fc-stat-sub"><?= $g['streak'] ? 'berturut-turut mencatat' : 'Catat sesuatu hari ini untuk mulai streak' ?></p></div>
     </div>
     <div class="hs-card p-5"><?= level_bar_html($g) ?>
-        <p class="text-lg mt-1">
+        <p class="text-2xl mt-2 flex gap-1.5">
             <?php $dapat = array_filter($g['badges'], fn($b) => $b['dapat']); ?>
-            <?php foreach ($dapat as $b): ?><span title="<?= e($b['nama']) ?>"><?= $b['icon'] ?></span> <?php endforeach; ?>
+            <?php foreach ($dapat as $b): ?><span title="<?= e($b['nama']) ?>"><?= $b['icon'] ?></span><?php endforeach; ?>
             <?php if (!$dapat): ?><span class="text-xs text-slate-400">Belum ada badge</span><?php endif; ?>
         </p>
     </div>
     <a href="pencapaian.php" class="hs-card p-5 block"><?= tantangan_html($g['tantangan']) ?>
-        <p class="text-[11px] font-bold text-hsOrange mt-2">Lihat semua pencapaian →</p></a>
-</div>
+        <p class="fc-link mt-2">Lihat semua pencapaian</p></a>
+</section>
 
-<div class="space-y-3">
-    <div class="flex flex-wrap justify-between items-center gap-3">
-        <div>
-            <h3 class="text-xl font-black">Saldo per Wallet</h3>
-            <p class="text-xs text-slate-500">Wallet bersifat opsional. Semua transaksi otomatis masuk ke wallet "Utama".</p>
-        </div>
-        <div class="flex gap-2">
-            <a href="wallet.php" class="hs-btn bg-slate-800 text-white px-3 py-2 text-xs"><i class="fa-solid fa-wallet"></i> Kelola Wallet</a>
-            <a href="transaksi.php#form" class="hs-btn bg-hsBlue text-white px-4 py-2 text-xs"><i class="fa-solid fa-plus"></i> Tambah Transaksi</a>
-        </div>
+<!-- Saldo per wallet -->
+<section aria-label="Saldo per wallet">
+    <div class="fc-section-title">
+        <div><h3>Dompetmu</h3><p>Semua transaksi otomatis masuk ke wallet "Utama" kalau tidak dipilih.</p></div>
+        <a href="wallet.php" class="fc-link">Kelola wallet</a>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="fc-wallets">
         <?php foreach ($wallets as $i => $w): ?>
-            <div class="wallet-card <?= $warnaWallet[$i % 5] ?> rounded-3xl p-5">
-                <p class="text-xs font-bold"><i class="fa-solid <?= $ikon[$w['tipe']] ?>"></i> <?= e($w['nama']) ?></p>
-                <p class="text-xl font-black mt-2"><?= rupiah($w['saldo']) ?></p>
+            <div class="wallet-card fc-w<?= $i % 5 ?>">
+                <p class="flex items-center gap-2 text-sm font-bold"><span class="fc-wallet-icon"><i class="fa-solid <?= $ikon[$w['tipe']] ?>"></i></span> <?= e($w['nama']) ?></p>
+                <p class="fc-stat-value"><?= rupiah($w['saldo']) ?></p>
             </div>
         <?php endforeach; ?>
     </div>
-</div>
+</section>
 
-<div class="hs-card p-5 space-y-3">
-    <div class="flex justify-between items-center">
-        <h4 class="text-sm font-black">Transaksi Terakhir</h4>
-        <a href="transaksi.php" class="text-xs font-bold text-hsOrange">Lihat semua →</a>
+<!-- Transaksi terakhir -->
+<section class="hs-card p-5" aria-label="Transaksi terakhir">
+    <div class="fc-section-title" style="margin-bottom:4px">
+        <h3 style="font-size:19px">Transaksi terakhir</h3>
+        <a href="transaksi.php" class="fc-link">Lihat semua</a>
     </div>
-    <?php if (!$recent): ?><p class="text-xs text-slate-500">Belum ada transaksi.</p><?php endif; ?>
-    <?php foreach ($recent as $t): ?>
-        <div class="flex justify-between items-center border-b last:border-0 py-2 text-sm">
-            <div>
-                <p class="font-bold"><?= e($t['keterangan']) ?></p>
-                <p class="text-xs text-slate-500"><?= tgl($t['tanggal']) ?> ·
-                    <?= $t['jenis'] === 'transfer' ? e($t['wallet']) . ' → ' . e($t['wallet_tujuan']) : e($t['kategori'] ?? '-') . ' · ' . e($t['wallet']) ?></p>
+    <?php if (!$recent): ?><p class="text-sm text-slate-500 py-3">Belum ada transaksi. Mulai dari tombol "Mau catat apa?" di atas.</p><?php endif; ?>
+    <?php foreach ($recent as $t):
+        $kelas = ['pemasukan' => 'is-in', 'pengeluaran' => 'is-out', 'transfer' => 'is-move'][$t['jenis']];
+        $emoji = $t['jenis'] === 'transfer' ? '🔁' : kategori_emoji($t['kategori'], $t['jenis']); ?>
+        <div class="fc-tx">
+            <span class="fc-tx-icon <?= $kelas ?>"><?= $emoji ?></span>
+            <div class="min-w-0 flex-1">
+                <p class="font-bold text-sm truncate"><?= e($t['keterangan']) ?></p>
+                <p class="text-xs text-slate-500 mt-0.5">
+                    <span class="fc-chip"><?= $t['jenis'] === 'transfer' ? e($t['wallet']) . ' ke ' . e($t['wallet_tujuan']) : e($t['kategori'] ?? 'Lainnya') ?></span>
+                    <?= tgl($t['tanggal']) ?>
+                </p>
             </div>
-            <p class="font-black <?= ['pemasukan' => 'text-hsGreen', 'pengeluaran' => 'text-hsRed', 'transfer' => 'text-hsBlue'][$t['jenis']] ?>">
-                <?= ['pemasukan' => '+', 'pengeluaran' => '−', 'transfer' => '⇄ '][$t['jenis']] ?><?= rupiah($t['nominal']) ?>
+            <p class="font-display font-extrabold text-base <?= ['pemasukan' => 'text-hsGreen', 'pengeluaran' => 'text-hsRed', 'transfer' => 'text-hsBlue'][$t['jenis']] ?>">
+                <?= ['pemasukan' => '+', 'pengeluaran' => '−', 'transfer' => ''][$t['jenis']] ?><?= rupiah($t['nominal']) ?>
             </p>
         </div>
     <?php endforeach; ?>
-</div>
+</section>
 
 <?php require __DIR__ . '/../includes/layout/footer.php'; ?>

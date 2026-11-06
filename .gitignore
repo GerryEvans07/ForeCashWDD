@@ -19,3 +19,6 @@ node_modules/
 uploads/struk/*
 !uploads/struk/.htaccess
 !uploads/struk/.gitkeep
+
+# sandi email (App Password Gmail) jangan ikut ke GitHub
+config/mail.php

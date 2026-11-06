@@ -5,12 +5,11 @@ $user = require_login('mahasiswa');
 $bulan = preg_match('/^\d{4}-\d{2}$/', $_GET['bulan'] ?? '') ? $_GET['bulan'] : date('Y-m');
 $r = report_data($user['user_id'], $bulan);
 
-$title = 'Laporan'; $active = 'laporan';
+$title = 'Laporan Bulanan'; $active = 'laporan';
 require __DIR__ . '/../includes/layout/header.php';
 ?>
 <div class="flex flex-wrap justify-between items-center gap-3">
     <div>
-        <h3 class="text-xl font-black">Laporan Bulanan</h3>
         <p class="text-xs text-slate-500">Transfer antar wallet tidak dihitung sebagai pemasukan maupun pengeluaran.</p>
     </div>
     <div class="flex gap-2">

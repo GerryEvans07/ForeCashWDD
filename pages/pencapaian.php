@@ -7,7 +7,6 @@ $title = 'Pencapaian'; $active = 'pencapaian';
 require __DIR__ . '/../includes/layout/header.php';
 ?>
 <div>
-    <h3 class="text-xl font-black">Pencapaian</h3>
     <p class="text-xs text-slate-500">Kumpulkan badge dari kebiasaan baik: rajin mencatat, hemat, dan melunasi utang.</p>
 </div>
 

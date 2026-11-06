@@ -47,11 +47,10 @@ $list = rows("SELECT t.transaction_id, t.bukti, t.tanggal, t.jenis, t.nominal, t
 $hariIni = (float)val("SELECT COALESCE(SUM(nominal),0) FROM transactions WHERE user_id = ? AND jenis = 'pengeluaran' AND tanggal = CURDATE()", 'i', $uid);
 $kategoriSaya = rows('SELECT category_id, nama, jenis FROM categories WHERE user_id = ? ORDER BY nama', 'i', $uid);
 
-$title = 'Transaksi'; $active = 'transaksi';
+$title = 'Transaksi & Anggaran'; $active = 'transaksi';
 require __DIR__ . '/../includes/layout/header.php';
 ?>
 <div>
-    <h3 class="text-xl font-black">Transaksi & Anggaran</h3>
     <p class="text-xs text-slate-500">Catat pemasukan, pengeluaran, dan transfer antar wallet.</p>
 </div>
 
@@ -60,7 +59,7 @@ require __DIR__ . '/../includes/layout/header.php';
         <form id="form" method="post" enctype="multipart/form-data" class="hs-card p-5 space-y-3">
             <?= csrf_field() ?>
             <h4 class="text-sm font-black">Catat Transaksi</h4>
-            <?= tx_form_fields($uid) ?>
+            <?= tx_form_fields($uid, in_array($_GET['jenis'] ?? '', ['pemasukan', 'pengeluaran', 'transfer']) ? ['jenis' => $_GET['jenis']] : null) ?>
             <button name="aksi" value="tambah" class="hs-btn bg-hsOrange text-white w-full py-3 text-sm">Simpan Transaksi</button>
         </form>
 
@@ -71,15 +70,18 @@ require __DIR__ . '/../includes/layout/header.php';
             </div>
             <?php if (!$list): ?><p class="text-xs text-slate-500">Belum ada transaksi di bulan ini.</p><?php endif; ?>
             <?php foreach ($list as $t): ?>
-                <div class="flex justify-between items-center gap-3 border-b last:border-0 py-2">
-                    <div class="text-sm min-w-0">
+                <?php $emoji = $t['jenis'] === 'transfer' ? '🔁' : kategori_emoji($t['kategori'], $t['jenis']); ?>
+                <div class="fc-tx">
+                    <span class="fc-tx-icon <?= ['pemasukan' => 'is-in', 'pengeluaran' => 'is-out', 'transfer' => 'is-move'][$t['jenis']] ?>"><?= $emoji ?></span>
+                    <div class="text-sm min-w-0 flex-1">
                         <p class="font-bold truncate"><?= e($t['keterangan']) ?></p>
-                        <p class="text-xs text-slate-500"><?= tgl($t['tanggal']) ?> ·
-                            <?= $t['jenis'] === 'transfer' ? e($t['wallet']) . ' → ' . e($t['wallet_tujuan']) : e($t['kategori'] ?? '-') . ' · ' . e($t['wallet']) ?></p>
+                        <p class="text-xs text-slate-500 mt-0.5">
+                            <span class="fc-chip"><?= $t['jenis'] === 'transfer' ? e($t['wallet']) . ' ke ' . e($t['wallet_tujuan']) : e($t['kategori'] ?? 'Lainnya') ?></span>
+                            <?= tgl($t['tanggal']) ?><?= $t['jenis'] !== 'transfer' ? ' · ' . e($t['wallet']) : '' ?></p>
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
-                        <p class="text-sm font-black <?= ['pemasukan' => 'text-hsGreen', 'pengeluaran' => 'text-hsRed', 'transfer' => 'text-hsBlue'][$t['jenis']] ?>">
-                            <?= ['pemasukan' => '+', 'pengeluaran' => '−', 'transfer' => '⇄ '][$t['jenis']] ?><?= rupiah($t['nominal']) ?></p>
+                        <p class="font-display font-extrabold text-base <?= ['pemasukan' => 'text-hsGreen', 'pengeluaran' => 'text-hsRed', 'transfer' => 'text-hsBlue'][$t['jenis']] ?>">
+                            <?= ['pemasukan' => '+', 'pengeluaran' => '−', 'transfer' => ''][$t['jenis']] ?><?= rupiah($t['nominal']) ?></p>
                         <?php if ($t['bukti']): ?>
                             <a href="struk.php?id=<?= $t['transaction_id'] ?>" target="_blank" class="w-8 h-8 rounded-full bg-amber-50 text-amber-600 text-xs flex items-center justify-center" title="Lihat foto struk"><i class="fa-solid fa-receipt"></i></a>
                         <?php endif; ?>

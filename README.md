@@ -17,12 +17,14 @@ Tampilan dibuat dengan HTML, CSS (Tailwind), dan JavaScript. PHP dan MySQL dipak
 
 Jika MySQL memakai password atau nama database lain, ubah di `config/database.php`.
 
-Akun demo (setelah import `demo_data.sql`):
+### Mengaktifkan email Lupa Kata Sandi (opsional)
 
-| Peran | Email | Password |
-|---|---|---|
-| Mahasiswa | demo@forecash.id | demo12345 |
-| Orang tua | ortu@forecash.id | demo12345 |
+Salin `config/mail.example.php` menjadi `config/mail.php`, lalu pilih salah satu:
+
+- **Resend** (`MAIL_DRIVER = 'resend'`): isi `RESEND_API_KEY` dari resend.com dan `RESEND_FROM` dengan alamat ber-domain yang sudah diverifikasi di Resend. Dikirim lewat HTTPS, jadi tidak terblokir jaringan kampus. Memerlukan ekstensi cURL PHP (aktif secara default di XAMPP).
+- **Gmail** (`MAIL_DRIVER = 'gmail'`): isi `MAIL_USER` dan `MAIL_PASS` (App Password 16 huruf dari myaccount.google.com/apppasswords). Dikirim lewat SMTP dengan library PHPMailer (`includes/lib/PHPMailer`, lisensi LGPL 2.1).
+
+`config/mail.php` tidak ikut ter-push ke GitHub (ada di `.gitignore`). Tanpa file ini, link reset ditampilkan di layar (mode demo).
 
 ## Struktur folder
 
@@ -30,7 +32,8 @@ Akun demo (setelah import `demo_data.sql`):
 ForeCashWDD/
 ├─ index.html                Landing page (HTML, CSS, animasi)
 ├─ config/
-│  └─ database.php           Koneksi MySQL, zona waktu, session
+│  ├─ database.php           Koneksi MySQL, zona waktu, session
+│  └─ mail.example.php       Contoh pengaturan email (salin jadi mail.php)
 ├─ includes/                 Logika yang dipakai banyak halaman
 │  ├─ functions.php          Helper, query (prepared statement), CSRF, login, saldo wallet, forecast()
 │  ├─ avatar.php             Avatar SVG dan ekspresinya
@@ -38,9 +41,16 @@ ForeCashWDD/
 │  ├─ report.php             Laporan bulanan dan grafik kategori
 │  ├─ tx_form.php            Validasi dan form transaksi
 │  ├─ upload.php             Upload foto struk
+│  ├─ reset.php              Token lupa kata sandi
+│  ├─ mailer.php             Kirim email lewat Resend API atau SMTP Gmail (PHPMailer)
+│  ├─ lib/PHPMailer/         Library PHPMailer
+│  ├─ pets.php               Katalog teman hemat (SVG), telur, logika menetas
+│  ├─ journey.php            Peta Petualangan (jalan berliku, satu titik = satu hari)
 │  └─ layout/                header.php, footer.php, warning.php (banner peringatan)
 ├─ pages/                    Satu file PHP per halaman
 │  ├─ login.php, logout.php  Login, registrasi, keluar
+│  ├─ lupa_password.php      Minta link reset kata sandi
+│  ├─ reset_password.php     Buat kata sandi baru dari link reset
 │  ├─ dashboard.php          Banner peringatan, ringkasan, gamifikasi, saldo per wallet
 │  ├─ transaksi.php          CRUD transaksi, transfer, kategori, batas harian, foto struk
 │  ├─ transaksi_edit.php     Ubah transaksi
@@ -49,6 +59,7 @@ ForeCashWDD/
 │  ├─ utang.php              Utang, piutang, split bill
 │  ├─ prediksi.php           Burn rate, grafik proyeksi, jadwal pemasukan
 │  ├─ laporan.php, export.php Laporan bulanan dan ekspor CSV
+│  ├─ petualangan.php        Peta perjalanan menuju uang saku, telur, koleksi teman hemat
 │  ├─ pencapaian.php         Streak, badge, level
 │  ├─ akun.php               Profil, avatar, kata sandi, kode hubung orang tua
 │  └─ ortu.php               Pantau Anak (peran orang tua)
@@ -58,7 +69,7 @@ ForeCashWDD/
 │  ├─ css/                   styles.css, landing.css, landing-anim.css
 │  ├─ img/                   logo.svg
 │  └─ js/                    tw-config.js, app.js (konfirmasi nominal, pratinjau split bill), chatbot.js (tampilan chatbot)
-├─ database/                 schema.sql, demo_data.sql
+├─ database/                 schema.sql, demo_data.sql, update_petualangan.sql
 ├─ uploads/struk/            Foto struk (dikunci .htaccess)
 └─ prototype-html/           Versi awal HTML/CSS/JS tanpa database
 ```
@@ -66,6 +77,7 @@ ForeCashWDD/
 ## Keamanan
 
 - **Kata sandi** disimpan dengan `password_hash()` (bcrypt) dan dicek dengan `password_verify()`.
+- **Lupa kata sandi**: link reset berisi token acak 64 karakter, berlaku 30 menit dan hanya bisa dipakai sekali. Yang disimpan di tabel `password_resets` hanya hash SHA-256-nya. Pesan setelah meminta reset selalu sama, jadi orang lain tidak bisa mengecek email mana yang terdaftar. Email dikirim lewat Resend atau Gmail jika `config/mail.php` sudah diisi; jika belum, link ditampilkan di layar (mode demo).
 - **Session**: ID session diganti saat login (`session_regenerate_id`), setiap halaman memeriksa login dan peran.
 - **SQL injection**: semua query memakai prepared statement (`q()`, `rows()`, `row()`, `val()` di `functions.php`).
 - **XSS**: semua data pengguna ditampilkan lewat `e()` (`htmlspecialchars`).
@@ -78,6 +90,13 @@ ForeCashWDD/
 - Nama file diganti acak 32 karakter.
 - Folder `uploads/struk` tidak bisa dibuka langsung dari browser (`.htaccess`). Gambar dikirim lewat `pages/struk.php` setelah dicek bahwa transaksinya milik pengguna yang login.
 - File ikut terhapus saat transaksinya dihapus atau fotonya diganti.
+
+## Petualangan
+
+- **Peta**: jalan berliku dari pemasukan terakhir sampai pemasukan berikutnya. Hari yang sudah lewat ditandai koin (hari baik), merah (melewati batas harian), atau abu-abu (tidak mencatat). Hari ke depan ditandai cukup atau habis berdasarkan prediksi saldo. Tema peta ikut status: padang rumput (aman), musim gugur (waspada), musim dingin (kritis).
+- **Telur**: menetas setelah 7 hari baik sejak hewan terakhir menetas. Hari baik = ada transaksi tercatat dan pengeluaran tidak melewati batas harian.
+- **Koleksi**: 12 teman hemat. Satu bisa diajak jalan-jalan; ia muncul di peta dan di banner dashboard. Data disimpan di tabel `user_pets`.
+- Jika database sudah dibuat sebelum fitur ini ada, import `database/update_petualangan.sql` sekali.
 
 ## Logika peringatan dini
 

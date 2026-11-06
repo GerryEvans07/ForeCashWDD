@@ -6,6 +6,7 @@ if ($u = current_user()) redirect($u['role'] === 'orangtua' ? 'ortu.php' : 'dash
 
 $mode = ($_GET['mode'] ?? $_POST['mode'] ?? 'masuk') === 'daftar' ? 'daftar' : 'masuk';
 $error = '';
+$info = flash();   // pesan dari halaman lain, misalnya setelah reset kata sandi
 $old = ['nama' => '', 'email' => '', 'role' => 'mahasiswa', 'avatar' => 'a1'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -52,8 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title><?= $mode === 'daftar' ? 'Registrasi' : 'Login' ?> — ForeCash</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../assets/js/config/tw-config.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <!-- font Satoshi (Fontshare, ITF Free Font License), sama dengan DapurTwin -->
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css?v=<?= filemtime(__DIR__ . '/../assets/css/styles.css') ?>">
     <link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
 </head>
 <body>
@@ -75,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <?php if ($error): ?><p class="text-sm font-bold text-hsRed"><?= e($error) ?></p><?php endif; ?>
+            <?php if ($info): ?><p class="text-sm font-bold text-emerald-700 bg-emerald-50 rounded-xl px-3 py-2"><?= e(ltrim($info, '!')) ?></p><?php endif; ?>
 
             <form method="post" class="space-y-4">
                 <?= csrf_field() ?>
@@ -104,6 +107,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label for="password" class="text-xs font-bold uppercase tracking-wider">Kata Sandi</label>
                     <input id="password" type="password" name="password" required <?= $mode === 'daftar' ? 'minlength="8"' : '' ?> placeholder="••••••••" class="w-full px-4 py-3 border text-sm font-semibold">
                 </div>
+                <?php if ($mode === 'masuk'): ?>
+                    <p class="text-right -mt-2"><a href="lupa_password.php" class="text-xs font-bold text-hsOrange hover:underline">Lupa kata sandi?</a></p>
+                <?php endif; ?>
                 <button class="hs-btn bg-hsOrange text-white w-full py-3.5 text-base"><?= $mode === 'daftar' ? 'Buat Akun' : 'Masuk' ?></button>
             </form>
         </div>

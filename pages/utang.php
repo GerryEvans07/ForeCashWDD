@@ -51,7 +51,6 @@ $title = 'Utang & Patungan'; $active = 'utang';
 require __DIR__ . '/../includes/layout/header.php';
 ?>
 <div>
-    <h3 class="text-xl font-black">Utang & Patungan</h3>
     <p class="text-xs text-slate-500">Catat utang-piutang antarteman dan bagi tagihan bersama.</p>
 </div>
 
@@ -99,7 +98,7 @@ require __DIR__ . '/../includes/layout/header.php';
     </div>
 
     <div class="space-y-6">
-        <form method="post" class="hs-card p-5 space-y-3">
+        <form id="split" method="post" class="hs-card p-5 space-y-3">
             <?= csrf_field() ?>
             <h4 class="text-sm font-black"><i class="fa-solid fa-calculator text-hsPurple"></i> Split Bill</h4>
             <div><label for="sj" class="text-xs font-bold">Judul</label><input id="sj" name="judul" placeholder="Makan malam angkatan" class="w-full px-3 py-2 text-xs border"></div>

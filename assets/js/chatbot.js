@@ -33,7 +33,9 @@ function initChatbot(user) {
 
     function clamp() {
         pos.x = Math.min(Math.max(8, pos.x), window.innerWidth - 72);
-        pos.y = Math.min(Math.max(8, pos.y), window.innerHeight - 72);
+        // di HP, jangan menutupi tab bar bawah
+        const bawah = window.innerWidth < 1024 ? 100 : 0;
+        pos.y = Math.min(Math.max(8, pos.y), window.innerHeight - 72 - bawah);
         btn.style.left = pos.x + 'px'; btn.style.top = pos.y + 'px';
         // panel dibuka di sisi yang masih muat di layar
         const pw = panel.offsetWidth || 352, ph = panel.offsetHeight || 448;

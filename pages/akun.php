@@ -35,7 +35,6 @@ $title = 'Akun'; $active = 'akun';
 require __DIR__ . '/../includes/layout/header.php';
 ?>
 <div>
-    <h3 class="text-xl font-black">Akun</h3>
     <p class="text-xs text-slate-500">Kelola profil, kata sandi, dan akses orang tua.</p>
 </div>
 
