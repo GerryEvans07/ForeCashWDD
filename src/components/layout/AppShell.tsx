@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation'
 import { LogOut, Eye } from 'lucide-react'
 import clsx from 'clsx'
 import Avatar from '@/components/Avatar'
+import Chatbot from '@/components/Chatbot'
 import { MENU_MAHASISWA, MENU_ORANGTUA, JUDUL_HALAMAN } from '@/lib/navigation'
 import { namaDepan } from '@/lib/format'
 
@@ -100,6 +101,9 @@ export default function AppShell({ user, tanggal, sapaan, logout, children }: Pr
 
         <main className="fc-content">{children}</main>
       </div>
+
+      {/* ForeCash Assistant (khusus mahasiswa) */}
+      {user.role === 'mahasiswa' && <Chatbot nama={namaDepan(user.nama)} />}
 
       {/* ===== Tab bar bawah (HP) ===== */}
       <nav className="fc-tabbar" aria-label="Menu utama">
