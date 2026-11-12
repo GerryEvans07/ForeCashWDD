@@ -1,0 +1,24 @@
+# sistem operasi
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# editor
+.vscode/
+.idea/
+
+# dependensi dan build (jika nanti dipakai)
+node_modules/
+.vercel/
+
+# rahasia
+.env
+.env.local
+
+# foto struk yang diunggah pengguna (jangan masuk repo)
+uploads/struk/*
+!uploads/struk/.htaccess
+!uploads/struk/.gitkeep
+
+# sandi email (App Password Gmail) jangan ikut ke GitHub
+config/mail.php
