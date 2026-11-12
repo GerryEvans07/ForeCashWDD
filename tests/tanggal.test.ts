@@ -20,3 +20,11 @@ test('format tanggal Indonesia', () => {
   assert.equal(hariKe('2026-11-16'), 1) // Senin
   assert.equal(hariKe('2026-11-15'), 7) // Minggu
 })
+
+test('rentang & nama bulan (termasuk pergantian tahun)', async () => {
+  const { rentangBulan, namaBulan, bulanDariParam } = await import('../src/lib/tanggal.ts')
+  assert.deepEqual(rentangBulan('2026-12'), ['2026-12-01', '2027-01-01'])
+  assert.deepEqual(rentangBulan('2026-02'), ['2026-02-01', '2026-03-01'])
+  assert.equal(namaBulan('2026-11'), 'November 2026')
+  assert.equal(bulanDariParam('2026-13'), bulanDariParam(null)) // bulan tidak valid -> bulan ini
+})

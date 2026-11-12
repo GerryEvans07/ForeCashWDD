@@ -56,3 +56,22 @@ export function hariKe(t: string): number {
 export function sapaan(jam: number): string {
   return jam < 11 ? 'Selamat pagi' : jam < 15 ? 'Selamat siang' : jam < 18 ? 'Selamat sore' : 'Selamat malam'
 }
+
+/** Awal & akhir bulan untuk filter, contoh '2026-11' -> ['2026-11-01', '2026-12-01'] (akhir tidak termasuk). */
+export function rentangBulan(bulan: string): [string, string] {
+  const [y, m] = bulan.split('-').map(Number)
+  const akhir = m === 12 ? `${y + 1}-01-01` : `${y}-${String(m + 1).padStart(2, '0')}-01`
+  return [`${bulan}-01`, akhir]
+}
+
+/** Nama bulan, contoh '2026-11' -> 'November 2026'. */
+export function namaBulan(bulan: string): string {
+  const NAMA = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+  const [y, m] = bulan.split('-').map(Number)
+  return `${NAMA[m - 1]} ${y}`
+}
+
+/** Ambil ?bulan=YYYY-MM dari URL, atau bulan ini kalau kosong/tidak valid. */
+export function bulanDariParam(q: string | undefined | null): string {
+  return q && /^\d{4}-(0[1-9]|1[0-2])$/.test(q) ? q : hariIni().slice(0, 7)
+}

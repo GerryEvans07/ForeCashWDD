@@ -5,7 +5,7 @@ import Flash from '@/components/Flash'
 import { wajibLogin } from '@/lib/auth'
 import { ambilWallet, kategoriEmoji, type Jenis } from '@/lib/data'
 import { rupiah } from '@/lib/format'
-import { hariIni, tgl } from '@/lib/tanggal'
+import { bulanDariParam, hariIni, rentangBulan, tgl } from '@/lib/tanggal'
 import TxForm, { type OpsiKategori } from './components/TxForm'
 import TombolHapus from '@/components/TombolHapus'
 import BatasHarianForm from './components/BatasHarianForm'
@@ -23,19 +23,12 @@ type Baris = {
   kategori: { nama: string } | null; wallet: { nama: string } | null; tujuan: { nama: string } | null
 }
 
-/** awal & akhir bulan untuk filter, contoh '2026-11' -> ['2026-11-01', '2026-12-01'] */
-function rentangBulan(bulan: string): [string, string] {
-  const [y, m] = bulan.split('-').map(Number)
-  const akhir = m === 12 ? `${y + 1}-01-01` : `${y}-${String(m + 1).padStart(2, '0')}-01`
-  return [`${bulan}-01`, akhir]
-}
-
 export default async function TransaksiPage({ searchParams }: { searchParams: Promise<{ bulan?: string; jenis?: string; ok?: string }> }) {
   const { supabase, profil } = await wajibLogin('mahasiswa')
   const uid = profil.id
   const sp = await searchParams
   const hari = hariIni()
-  const bulan = /^\d{4}-\d{2}$/.test(sp.bulan ?? '') ? sp.bulan! : hari.slice(0, 7)
+  const bulan = bulanDariParam(sp.bulan)
   const [dari, sampai] = rentangBulan(bulan)
   const jenisAwal = (['pemasukan', 'pengeluaran', 'transfer'] as const).find((j) => j === sp.jenis) ?? 'pengeluaran'
 
