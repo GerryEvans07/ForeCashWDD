@@ -99,7 +99,6 @@ export default function AppShell({ user, tanggal, sapaan, logout, children }: Pr
         </header>
 
         <main className="fc-content">{children}</main>
-        <footer className="fc-foot">ForeCash © 2026 · Kelompok 4 IS556</footer>
       </div>
 
       {/* ===== Tab bar bawah (HP) ===== */}
