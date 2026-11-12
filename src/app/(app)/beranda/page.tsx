@@ -3,9 +3,11 @@ import Link from 'next/link'
 import { after } from 'next/server'
 import { Coins, Flame, HandCoins, UserRoundMinus, Banknote, Landmark, Smartphone } from 'lucide-react'
 import WarningBanner from '@/components/WarningBanner'
+import { LevelBar, Tantangan } from '@/components/Gamifikasi'
 import { wajibLogin } from '@/lib/auth'
 import { ambilForecast, ambilWallet, kategoriEmoji, type Jenis } from '@/lib/data'
 import { emailStatusKritis } from '@/lib/email'
+import { ambilGamify } from '@/lib/gamify'
 import { rupiah } from '@/lib/format'
 import { tgl } from '@/lib/tanggal'
 
@@ -37,6 +39,8 @@ export default async function BerandaPage() {
       .limit(5),
     supabase.from('debts').select('arah, nominal').eq('user_id', uid).eq('status', 'belum'),
   ])
+  const g = await ambilGamify(supabase, uid, profil.batas_harian, f.status)
+  const badgeDapat = g.badges.filter((b) => b.dapat)
   const transaksi = (recent.data ?? []) as unknown as TxTerakhir[]
   const total = (arah: string) => (debts.data ?? []).filter((d) => d.arah === arah).reduce((s, d) => s + Number(d.nominal), 0)
   const piutang = total('piutang')
@@ -91,7 +95,27 @@ export default async function BerandaPage() {
         </div>
       </section>
 
-      {/* Gamifikasi (streak, level, tantangan) ditambahkan di Tahap 9 */}
+      {/* Gamifikasi: streak, level & badge, tantangan mingguan */}
+      <section className="fc-game" aria-label="Pencapaian">
+        <div className="hs-card fc-streak">
+          <span className="fc-streak-flame">🔥</span>
+          <div>
+            <p className="fc-stat-value" style={{ fontSize: 30 }}>{g.streak} hari</p>
+            <p className="fc-stat-sub">{g.streak ? 'berturut-turut mencatat' : 'Catat sesuatu hari ini untuk mulai streak'}</p>
+          </div>
+        </div>
+        <div className="hs-card p-5">
+          <LevelBar g={g} />
+          <p className="text-2xl mt-2 flex gap-1.5">
+            {badgeDapat.map((b) => <span key={b.nama} title={b.nama}>{b.icon}</span>)}
+            {badgeDapat.length === 0 && <span className="text-xs text-slate-400">Belum ada badge</span>}
+          </p>
+        </div>
+        <Link href="/pencapaian" className="hs-card p-5 block">
+          <Tantangan t={g.tantangan} />
+          <p className="fc-link mt-2">Lihat semua pencapaian</p>
+        </Link>
+      </section>
 
       {/* Saldo per wallet */}
       <section aria-label="Saldo per wallet">
