@@ -28,7 +28,10 @@ export default function AppShell({ user, tanggal, sapaan, logout, children }: Pr
   const pathname = usePathname()
   const menus = user.role === 'orangtua' ? MENU_ORANGTUA : MENU_MAHASISWA
   const home = menus[0].href
-  const aktif = (href: string) => pathname === href || pathname.startsWith(href + '/')
+  // halaman tanpa menu sendiri ikut menyalakan menu induknya (Kelola Wallet -> Beranda)
+  const induk: Record<string, string> = { '/wallet': '/beranda' }
+  const path = induk[pathname] ?? pathname
+  const aktif = (href: string) => path === href || path.startsWith(href + '/')
   const judul = pathname === '/beranda' ? `${sapaan}, ${namaDepan(user.nama)}!` : JUDUL_HALAMAN[pathname] ?? 'ForeCash'
 
   return (
