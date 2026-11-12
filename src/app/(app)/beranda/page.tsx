@@ -3,9 +3,11 @@ import Link from 'next/link'
 import { after } from 'next/server'
 import { Coins, Flame, HandCoins, UserRoundMinus, Banknote, Landmark, Smartphone } from 'lucide-react'
 import WarningBanner from '@/components/WarningBanner'
+import PetSvg from '@/components/PetSvg'
+import { PETS } from '@/lib/pets'
 import { LevelBar, Tantangan } from '@/components/Gamifikasi'
 import { wajibLogin } from '@/lib/auth'
-import { ambilForecast, ambilWallet, kategoriEmoji, type Jenis } from '@/lib/data'
+import { ambilForecast, ambilPetDipakai, ambilWallet, kategoriEmoji, type Jenis } from '@/lib/data'
 import { emailStatusKritis } from '@/lib/email'
 import { ambilGamify } from '@/lib/gamify'
 import { rupiah } from '@/lib/format'
@@ -27,7 +29,7 @@ export default async function BerandaPage() {
   const { supabase, user, profil } = await wajibLogin('mahasiswa')
   const uid = profil.id
 
-  const wallets = await ambilWallet(supabase, uid)
+  const [wallets, teman] = await Promise.all([ambilWallet(supabase, uid), ambilPetDipakai(supabase, uid)])
   const [f, recent, debts] = await Promise.all([
     ambilForecast(supabase, uid, wallets),
     supabase
@@ -58,7 +60,15 @@ export default async function BerandaPage() {
 
   return (
     <>
-      <WarningBanner f={f} avatarId={profil.avatar} />
+      <WarningBanner
+        f={f}
+        avatarId={profil.avatar}
+        buddy={teman && (
+          <Link href="/petualangan" className="fc-hero-buddy" title={`${PETS[teman]?.nama ?? 'Teman hemat'} menemanimu`}>
+            <PetSvg id={teman} size={64} />
+          </Link>
+        )}
+      />
 
       {/* Ringkasan angka */}
       <section className="fc-stats" aria-label="Ringkasan">

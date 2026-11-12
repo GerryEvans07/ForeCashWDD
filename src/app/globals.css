@@ -452,3 +452,7 @@ canvas { max-width: 100%; }
 .fc-dialog-story { font-size: 14px; color: var(--ink); line-height: 1.55; margin-top: 6px; }
 .fc-dialog-date { font-size: 12px; font-weight: 700; color: var(--muted); margin-top: 10px; }
 .fc-dialog-actions { display: flex; justify-content: center; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+
+/* ===== Penyesuaian untuk Next.js + Tailwind 4 =====
+   Preflight Tailwind 4 menghapus margin bawaan <dialog>, jadi dialog tidak lagi di tengah layar. */
+.fc-dialog { margin: auto; }

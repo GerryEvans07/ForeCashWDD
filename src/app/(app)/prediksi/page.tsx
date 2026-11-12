@@ -1,7 +1,10 @@
 // Prediksi & Notifikasi (port dari php-version/pages/prediksi.php).
+import Link from 'next/link'
 import WarningBanner from '@/components/WarningBanner'
+import PetSvg from '@/components/PetSvg'
+import { PETS } from '@/lib/pets'
 import { wajibLogin } from '@/lib/auth'
-import { ambilForecast, ambilWallet } from '@/lib/data'
+import { ambilForecast, ambilPetDipakai, ambilWallet } from '@/lib/data'
 import { hariIni } from '@/lib/tanggal'
 import ProyeksiPanel from './components/ProyeksiPanel'
 import { DaftarJadwal, TambahJadwalForm, type Jadwal } from './components/Jadwal'
@@ -13,7 +16,7 @@ export default async function PrediksiPage() {
   const uid = profil.id
   const hari = hariIni()
 
-  const wallets = await ambilWallet(supabase, uid)
+  const [wallets, teman] = await Promise.all([ambilWallet(supabase, uid), ambilPetDipakai(supabase, uid)])
   const [f, jadwalRes] = await Promise.all([
     ambilForecast(supabase, uid, wallets),
     supabase.from('income_schedules').select('id, sumber, nominal, tanggal_perkiraan').eq('user_id', uid).eq('status', 'menunggu').order('tanggal_perkiraan'),
@@ -26,7 +29,15 @@ export default async function PrediksiPage() {
         <p className="text-xs text-slate-500">Dihitung otomatis dari transaksi: burn rate = total pengeluaran {f.hari} hari terakhir ÷ {f.hari}.</p>
       </div>
 
-      <WarningBanner f={f} avatarId={profil.avatar} />
+      <WarningBanner
+        f={f}
+        avatarId={profil.avatar}
+        buddy={teman && (
+          <Link href="/petualangan" className="fc-hero-buddy" title={`${PETS[teman]?.nama ?? 'Teman hemat'} menemanimu`}>
+            <PetSvg id={teman} size={64} />
+          </Link>
+        )}
+      />
 
       <ProyeksiPanel
         hariIni={hari} saldo={f.saldo} burn={f.burn} runway={f.runway} habis={f.habis}
